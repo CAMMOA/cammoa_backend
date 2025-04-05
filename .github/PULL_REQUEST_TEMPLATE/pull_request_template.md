@@ -1,25 +1,22 @@
----
-name: issue template
-about: 이슈를 생성해주세요.
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## 1. 작업 내용
 
 - 
+<br/>
 
 ## 2. 이미지 첨부
+
+<img src="{사진 링크}" width="50%" height="50%">
+<br/>
 
 ## 3. 추가해야 할 기능
 
 -
+<br/>
 
 ## 4. 기타
 
 - 
+<br/>
 
 ## 5. 이슈 링크
  cammoa_backend #{이슈번호}
