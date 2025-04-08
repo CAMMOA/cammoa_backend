@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorResponseEnum implements Response {
 
-    RESPONSE_NOT_VALID(HttpStatus.BAD_REQUEST, "Response Is Not Valid");
+    RESPONSE_NOT_VALID(HttpStatus.BAD_REQUEST, "Response Is Not Valid"),
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed To Send Email");
 
     private final HttpStatus httpStatus;
     private final String message;
