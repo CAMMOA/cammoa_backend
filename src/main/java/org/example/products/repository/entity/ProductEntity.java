@@ -18,14 +18,19 @@ public class ProductEntity {
 
     private Long userId;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String category;
 
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private String image;
 
+    @Column(nullable = false)
     private int price;
 
     private LocalDateTime deadline;
@@ -38,10 +43,12 @@ public class ProductEntity {
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
     private String status;
 
     private int currentParticipants;
 
+    @Column(nullable = false)
     private int maxParticipants;
 
     @PrePersist
