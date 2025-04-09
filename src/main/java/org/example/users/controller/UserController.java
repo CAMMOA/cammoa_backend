@@ -1,18 +1,17 @@
 package org.example.users.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
+import org.example.email.dto.SendEmailResponse;
+import org.example.email.service.EmailService;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
-import org.example.users.repository.entity.UserEntity;
 import org.example.users.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -22,6 +21,7 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request){
@@ -35,5 +35,18 @@ public class UserController {
                         .response(SuccessResponseEnum.RESOURCES_CREATED)
                         .build());
 
+    }
+
+    @GetMapping("/signup/email/{email}")
+    public ResponseEntity<?> sendEmail(@PathVariable String email) throws MessagingException {
+        //이메일 전송 및 결과 받기
+        SendEmailResponse response = emailService.sendSimpleMessage(email);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<SendEmailResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.EMAIL_SEND_SUCCESS)
+                        .build()
+        );
     }
 }

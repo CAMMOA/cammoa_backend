@@ -5,9 +5,27 @@ spring:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   jpa:
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         show_sql: true
+
+  mail:
+    host: smtp.gmail.com #SMTP 서버 호스트
+    port: 587 #SMTP 서버 포트
+    username: ${spring.mail.username}
+    password: ${spring.mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true # 사용자에 대한 인증 후 메일 전송
+          timeout: 5000
+          starttls:
+            enable: true
