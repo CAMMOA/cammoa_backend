@@ -23,7 +23,7 @@ public class RedisService {
     }
 
     // 이메일의 인증 코드를 반환
-    public String getCode(String email) throws AuthenticationException {
+    public String getCode(String email) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String authCode = valueOperations.get(email);
         if (authCode == null) {

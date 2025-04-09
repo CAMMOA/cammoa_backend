@@ -5,7 +5,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
-import org.example.email.dto.SendEmailResponse;
+import org.example.email.dto.request.ValidateEmailRequest;
+import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
@@ -40,12 +41,23 @@ public class UserController {
     @GetMapping("/signup/email/{email}")
     public ResponseEntity<?> sendEmail(@PathVariable String email) throws MessagingException {
         //이메일 전송 및 결과 받기
-        SendEmailResponse response = emailService.sendSimpleMessage(email);
+        SendEmailResponse response = userService.sendAuthcode(email);
 
         return ResponseEntity.ok(
                 CommonResponseEntity.<SendEmailResponse>builder()
                         .data(response)
                         .response(SuccessResponseEnum.EMAIL_SEND_SUCCESS)
+                        .build()
+        );
+    }
+
+    @PostMapping("/signup/email/verify")
+    public ResponseEntity<?> verifyEmail(@RequestBody ValidateEmailRequest request) {
+        userService.validationAuthCode(request);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.EMAIL_VERIFICATION_SUCCESS)
                         .build()
         );
     }

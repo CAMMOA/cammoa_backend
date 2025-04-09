@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
-import org.example.email.dto.SendEmailResponse;
+import org.example.email.dto.response.SendEmailResponse;
 import org.example.exception.impl.AuthException;
 import org.example.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,19 +63,14 @@ public class EmailServiceImpl implements EmailService{
     }
 
     //이메일 전송
-    public SendEmailResponse sendSimpleMessage(String sendEmail) throws MessagingException {
+    public String sendSimpleMessage(String sendEmail) throws MessagingException {
         String authCode = createCode();
 
         MimeMessage message = createMail(sendEmail, authCode);
         try{
             javaMailSender.send(message);
 
-            String messageId = message.getMessageID();
-
-            return SendEmailResponse.builder()
-                    .messageId(messageId)
-                    .authCode(authCode)
-                    .build();
+            return authCode;
 
         } catch (MailException e){
             throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
