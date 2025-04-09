@@ -26,6 +26,8 @@ spring:
       mail:
         smtp:
           auth: true # 사용자에 대한 인증 후 메일 전송
+          connectiontimeout: 5000
           timeout: 5000
           starttls:
             enable: true
+      auth-code-expiration-millis: 300000 #이메일 인증 코드 만료 시간: 5분
