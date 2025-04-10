@@ -1,5 +1,7 @@
 package org.example.products.dto.request;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import java.time.LocalDateTime;
 import jakarta.validation.constraints.NotBlank;
@@ -15,16 +17,16 @@ public class ProductCreateRequest {
     private String description;
     @NotBlank
     private String image;
-    @NotNull
+    @NotNull @Positive
     private int price;
-    @NotNull
+    @NotNull @Future
     private LocalDateTime deadline;
-    @NotNull
+    @NotNull @Positive
     private int numPeople;
     @NotBlank
     private String place;
     @NotBlank
     private String status;
-    @NotNull
+    @NotNull @Positive
     private int maxParticipants;
 }
