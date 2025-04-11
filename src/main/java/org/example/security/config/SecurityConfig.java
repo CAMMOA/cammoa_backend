@@ -21,8 +21,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()  // 회원가입 허용 (POST /api/users)
                         .requestMatchers(HttpMethod.GET, "/api/auth/signup/email/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup/email/verify").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/posts").permitAll() // 게시글 생성 허용
-                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() // 게시글 생성 허용
+                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll() // 게시글 생성 허용
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 );

@@ -1,11 +1,15 @@
 package org.example.products.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.exception.CustomException;
 import org.example.products.dto.request.ProductCreateRequest;
+import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.ProductRepository;
-import org.example.exception.impl.InvalidRequestException;
+import org.example.users.repository.UserRepository;
+import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,19 +20,25 @@ import java.time.LocalDateTime;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
         if (request.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new InvalidRequestException("마감일은 현재 시각보다 이후여야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_DEADLINE);
         }
 
         if (request.getMaxParticipants() < request.getNumPeople()) {
-            throw new InvalidRequestException("최대 인원은 현재 참여 인원보다 커야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_MAX_PARTICIPANTS);
+
         }
 
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.USER_NOT_FOUND));
+
+
         ProductEntity product = ProductEntity.builder()
-                .userId(userId)
+                .user(user)
                 .title(request.getTitle())
                 .category(request.getCategory())
                 .description(request.getDescription())
@@ -94,6 +104,29 @@ public class ProductService {
                 .status(product.getStatus())
                 .currentParticipants(product.getCurrentParticipants())
                 .maxParticipants(product.getMaxParticipants())
+                .build();
+    }
+
+    public ProductDetailResponse getProductDetail(Long productId) {
+        ProductEntity product = productRepository.findByIdWithUser(productId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
+
+
+        return ProductDetailResponse.builder()
+                .productId(product.getProductId())
+                .title(product.getTitle())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .image(product.getImage())
+                .price(product.getPrice())
+                .deadline(product.getDeadline())
+                .place(product.getPlace())
+                .currentParticipants(product.getCurrentParticipants())
+                .maxParticipants(product.getMaxParticipants())
+                .status(product.getStatus())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .username(product.getUser().getUsername())  // 작성자 이름
                 .build();
     }
 

@@ -17,4 +17,9 @@ public class CommonResponseEntity<T> {
         this.message = response.getMessage();
         this.data = data;
     }
+
+
 }
+
+
+
