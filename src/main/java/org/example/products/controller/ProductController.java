@@ -40,7 +40,7 @@ public class ProductController {
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductResponse>>builder()
                         .data(responseList)
-                        .response(SuccessResponseEnum.OK)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }
@@ -51,7 +51,7 @@ public class ProductController {
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductResponse>>builder()
                         .data(products)
-                        .response(SuccessResponseEnum.OK)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }
@@ -62,7 +62,7 @@ public class ProductController {
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductResponse>>builder()
                         .data(products)
-                        .response(SuccessResponseEnum.OK)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }
@@ -73,7 +73,7 @@ public class ProductController {
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductResponse>>builder()
                         .data(products)
-                        .response(SuccessResponseEnum.OK)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }
@@ -84,7 +84,7 @@ public class ProductController {
         return ResponseEntity.ok(
                 CommonResponseEntity.<ProductDetailResponse>builder()
                         .data(response)
-                        .response(SuccessResponseEnum.OK)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }

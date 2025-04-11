@@ -23,8 +23,10 @@ public enum ErrorResponseEnum implements Response {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 
     //게시글
-    INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 올바른 타입을 입력해주세요."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "마감일은 현재 시각보다 이후여야 합니다."),
+    INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "최대 인원은 현재 참여 인원보다 커야 합니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;

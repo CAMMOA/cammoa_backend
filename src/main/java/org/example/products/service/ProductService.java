@@ -8,8 +8,6 @@ import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.ProductRepository;
-import org.example.exception.impl.InvalidRequestException;
-import org.example.users.repository.UserJpaRepository;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
@@ -23,19 +21,19 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-    private final UserJpaRepository userJpaRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
         if (request.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new InvalidRequestException("마감일은 현재 시각보다 이후여야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_DEADLINE);
         }
 
         if (request.getMaxParticipants() < request.getNumPeople()) {
-            throw new InvalidRequestException("최대 인원은 현재 참여 인원보다 커야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_MAX_PARTICIPANTS);
+
         }
 
-        UserEntity user = userJpaRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorResponseEnum.USER_NOT_FOUND));
 
 

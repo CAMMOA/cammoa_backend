@@ -12,8 +12,7 @@ public enum SuccessResponseEnum implements Response {
 
     EMAIL_SEND_SUCCESS(HttpStatus.OK, "Email Successfully Sent"),
     EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
-
-    OK(HttpStatus.OK, "요청이 성공적으로 처리되었습니다.");
+    REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully");
 
     private final HttpStatus httpStatus;
     private final String message;
