@@ -17,4 +17,15 @@ public class CommonResponseEntity<T> {
         this.message = response.getMessage();
         this.data = data;
     }
+
+    public static <T> CommonResponseEntity<T> success(Response response, T data) {
+        return CommonResponseEntity.<T>builder()
+                .response(response)
+                .data(data)
+                .build();
+    }
+
 }
+
+
+

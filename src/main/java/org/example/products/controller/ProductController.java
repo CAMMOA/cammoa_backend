@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.products.dto.request.ProductCreateRequest;
+import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.service.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,11 @@ public class ProductController {
     public ResponseEntity<List<ProductResponse>> getRecentlyPostedProducts() {
         List<ProductResponse> products = productService.getRecentlyPostedProducts();
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<?> getPostDetail(@PathVariable("postId") Long postId) {
+        ProductDetailResponse response = productService.getProductDetail(postId);
+        return ResponseEntity.ok(CommonResponseEntity.success(SuccessResponseEnum.OK, response));
     }
 }
