@@ -17,6 +17,7 @@ public class ProductResponse {
     private int numPeople;
     private String place;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String status;
     private int currentParticipants;
     private int maxParticipants;
