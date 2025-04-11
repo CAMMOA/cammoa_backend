@@ -113,6 +113,7 @@ public class ProductService {
         ProductEntity product = productRepository.findByIdWithUser(productId)
                 .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
 
+
         return ProductDetailResponse.builder()
                 .productId(product.getProductId())
                 .title(product.getTitle())
