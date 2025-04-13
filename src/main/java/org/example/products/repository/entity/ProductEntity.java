@@ -2,6 +2,8 @@ package org.example.products.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.users.repository.entity.UserEntity;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,8 +17,6 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
-
-    private Long userId;
 
     @Column(nullable = false)
     private String title;
@@ -62,4 +62,9 @@ public class ProductEntity {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
 }

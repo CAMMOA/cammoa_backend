@@ -17,7 +17,16 @@ public enum ErrorResponseEnum implements Response {
 
     //인증코드
     AUTH_CODE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "Authentication Code Cannot Be Found"),
-    AUTH_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "Authentication Code Does Not Match");
+    AUTH_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "Authentication Code Does Not Match"),
+
+    //사용자
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+
+    //게시글
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "마감일은 현재 시각보다 이후여야 합니다."),
+    INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "최대 인원은 현재 참여 인원보다 커야 합니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;

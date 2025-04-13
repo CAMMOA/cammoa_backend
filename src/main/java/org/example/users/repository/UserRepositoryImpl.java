@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @AllArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -15,5 +17,8 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.save(user);
     }
 
-
+    @Override
+    public Optional<UserEntity> findById(Long id) {
+        return userJpaRepository.findById(id);
+    }
 }

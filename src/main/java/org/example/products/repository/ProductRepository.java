@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
@@ -24,4 +25,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     // 방금 올라온 공구: 최근 24시간 내에 생성된 공구
     @Query("SELECT p FROM ProductEntity p WHERE p.createdAt >= :since ORDER BY p.createdAt DESC")
     List<ProductEntity> findRecentProducts(@Param("since") LocalDateTime since);
+
+    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :productId")
+    Optional<ProductEntity> findByIdWithUser(@Param("productId") Long productId);
 }
