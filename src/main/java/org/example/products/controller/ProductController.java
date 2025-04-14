@@ -88,4 +88,15 @@ public class ProductController {
                         .build()
         );
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword) {
+        List<ProductResponse> products = productService.searchProductsByKeyword(keyword);
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<ProductResponse>>builder()
+                        .data(products)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
 }

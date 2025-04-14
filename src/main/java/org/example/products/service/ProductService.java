@@ -130,6 +130,20 @@ public class ProductService {
                 .build();
     }
 
+    public List<ProductResponse> searchProductsByKeyword(String keyword) {
+        List<ProductEntity> products = productRepository
+                .findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+
+        if (products.isEmpty()) {
+            throw new CustomException(ErrorResponseEnum.POST_NOT_FOUND);
+        }
+
+        return products.stream()
+                .map(this::toProductResponse)
+                .collect(Collectors.toList());
+    }
+
+
 }
 
 
