@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.products.dto.request.ProductCreateRequest;
+import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.service.ProductService;
@@ -99,4 +100,20 @@ public class ProductController {
                         .build()
         );
     }
+
+    @PatchMapping("/{postId}")
+    public ResponseEntity<?> updatePost(@PathVariable Long postId,
+                                        @RequestBody ProductUpdateRequest request) {
+        Long mockUserId = 1L; // 추후 로그인 연동 시 교체 예정
+
+        ProductResponse response = productService.updateProduct(postId, request, mockUserId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<ProductResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
 }

@@ -23,6 +23,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup/email/verify").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/**").permitAll() // 게시글 생성 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/posts/**").permitAll() //게시글 수정 허용
+
 
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 );
