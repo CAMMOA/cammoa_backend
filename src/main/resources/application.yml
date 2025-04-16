@@ -31,3 +31,7 @@ spring:
           starttls:
             enable: true
       auth-code-expiration-millis: 300000 #이메일 인증 코드 만료 시간: 5분
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}

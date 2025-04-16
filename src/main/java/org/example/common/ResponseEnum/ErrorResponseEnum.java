@@ -21,10 +21,15 @@ public enum ErrorResponseEnum implements Response {
 
     //사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
 
     //게시글
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 올바른 타입을 입력해주세요."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+
+    //중복된 리소스
+    DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
+    DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email");
 
     private final HttpStatus httpStatus;
     private final String message;

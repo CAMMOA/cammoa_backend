@@ -20,6 +20,7 @@ import org.example.users.repository.entity.UserEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final RedisService redisService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -57,12 +59,11 @@ public class UserServiceImpl implements UserService {
         //비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-
         try {
 
             UserEntity userEntity = UserEntity.builder()
                     .username(request.getUsername())
-                    .password(request.getPassword())
+                    .password(encodedPassword)
                     .email(request.getEmail())
                     .build();
 
@@ -107,4 +108,24 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public JwtToken login(String email, String password){
+        // 1. 이메일로 사용자 조회
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        // 2. 비밀번호 일치 여부 확인
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new AuthException(ErrorResponseEnum.INVALID_PASSWORD);
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+
+        return jwtToken;
+    }
 }
