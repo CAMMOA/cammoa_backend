@@ -22,10 +22,13 @@ public enum ErrorResponseEnum implements Response {
     //사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글에 대한 권한이 없습니다."),
 
     //게시글
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 올바른 타입을 입력해주세요."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "마감일은 현재 시각보다 이후여야 합니다."),
+    INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "최대 인원은 현재 참여 인원보다 커야 합니다."),
 
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),

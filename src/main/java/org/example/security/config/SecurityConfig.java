@@ -23,9 +23,9 @@ public class SecurityConfig {
 
     //특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                //REST API이므로 basic auth 및 csrf 보안을 사용하지 않음
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // CSRF 보호 비활성화 (REST API에 적합)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 //JWT를 사용하기 때문에 세션 사용 X

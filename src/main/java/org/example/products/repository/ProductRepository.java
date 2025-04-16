@@ -28,4 +28,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :productId")
     Optional<ProductEntity> findByIdWithUser(@Param("productId") Long productId);
+
+    List<ProductEntity> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
+
 }

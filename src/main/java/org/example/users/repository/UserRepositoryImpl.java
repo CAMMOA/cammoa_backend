@@ -18,6 +18,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<UserEntity> findById(Long id) {
+        return userJpaRepository.findById(id);
+    }
+
+    @Override
     public Optional<UserEntity> findByUsername(String username){ return userJpaRepository.findByUsername(username); };
 
     @Override
@@ -32,4 +37,5 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> findByEmail(String email) {return userJpaRepository.findByEmail(email);}
+
 }
