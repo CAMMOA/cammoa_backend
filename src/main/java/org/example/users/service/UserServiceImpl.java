@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         try {
-
             UserEntity userEntity = UserEntity.builder()
                     .username(request.getUsername())
                     .password(encodedPassword)

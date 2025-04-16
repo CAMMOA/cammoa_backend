@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,10 +26,11 @@ import static org.example.security.constant.JwtTokenConstant.*;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private final Key key;
+
+    private Key key;
 
     // application.yml에서 secret 값 가져와서 key에 저장
-    public JwtTokenProvider(@Value("${jwt.secret.key}") String secretKey){
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -48,7 +48,7 @@ public class JwtTokenProvider {
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("auth", authorities)
+                .claim(AUTHORIZATION_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -59,8 +59,10 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
+        System.out.println("Generated Token: " + accessToken);
+
         return JwtToken.builder()
-                .grantType(BEARER_PREFIX)
+                .grantType("Bearer ")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -71,13 +73,13 @@ public class JwtTokenProvider {
         //Jwt 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
-        if(claims.get("auth") == null){
+        if(claims.get(AUTHORIZATION_KEY) == null){
             throw new RuntimeException("Invalid access token");
         }
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
+                Arrays.stream(claims.get(AUTHORIZATION_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
