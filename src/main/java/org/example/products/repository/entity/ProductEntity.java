@@ -21,8 +21,9 @@ public class ProductEntity {
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private CategoryEnum category;
 
     @Column(nullable = false)
     private String description;

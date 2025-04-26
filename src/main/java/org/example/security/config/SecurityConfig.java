@@ -34,12 +34,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                         .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
-                )
-                .build();
+                );
+                return http.build(); // 이렇게 수정하지 않으면 빌드 오류가 뜸..
     }
 
     @Bean
