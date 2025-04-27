@@ -20,7 +20,7 @@ public enum ErrorResponseEnum implements Response {
     AUTH_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "Authentication Code Does Not Match"),
 
     //사용자
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found"),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글에 대한 권한이 없습니다."),
 

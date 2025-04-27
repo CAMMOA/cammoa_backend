@@ -11,4 +11,5 @@ public interface UserRepository {
     Optional<UserEntity> findByEmail(String email);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
+    void delete(UserEntity user);
 }
