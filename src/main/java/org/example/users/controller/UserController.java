@@ -10,6 +10,7 @@ import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.security.dto.JwtToken;
+import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public JwtToken login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
         JwtToken jwtToken = userService.login(email, password);
@@ -75,6 +76,22 @@ public class UserController {
         log.info("request email = {}, password = {}", email, password);
         log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
 
-        return jwtToken;
+        return ResponseEntity.ok(
+            CommonResponseEntity.builder()
+                    .data(jwtToken)
+                    .response(SuccessResponseEnum.LOGIN_SUCCESS)
+                    .build()
+        );
+    }
+
+    @PostMapping("/users/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.PASSWORD_CHANGED)
+                        .build()
+        );
     }
 }

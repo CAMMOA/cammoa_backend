@@ -5,5 +5,4 @@ import org.example.exception.CustomException;
 
 public class ResourceException extends CustomException {
     public ResourceException(Response response) { super(response); }
-
 }
