@@ -24,6 +24,15 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String requestURI = httpRequest.getRequestURI();
+
+        // 로그인/회원가입 경로 필터링 제외
+        if (requestURI.equals("/api/auth/login") || requestURI.equals("/api/auth/signup")) {
+            chain.doFilter(request, response); // 수정: chain 변수명 일치
+            return;
+        }
+
         String token = resolveToken((HttpServletRequest) request);
 
         // validateToken으로 토큰 유효성 검사

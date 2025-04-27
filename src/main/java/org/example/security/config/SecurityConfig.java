@@ -24,7 +24,7 @@ public class SecurityConfig {
     //특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 // CSRF 보호 비활성화 (REST API에 적합)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
