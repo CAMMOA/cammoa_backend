@@ -13,6 +13,7 @@ import org.example.exception.impl.ResourceException;
 import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
 import org.example.security.dto.JwtToken;
+import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
                     .username(request.getUsername())
                     .password(encodedPassword)
                     .email(request.getEmail())
+                    .roles(List.of(ROLE_USER))
                     .build();
 
             UserEntity savedUser = userRepository.save(userEntity);
@@ -126,5 +128,22 @@ public class UserServiceImpl implements UserService {
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication, user.getId());
 
         return jwtToken;
+    }
+
+    @Transactional
+    public void changePassword(@RequestBody ChangePasswordRequest request) {
+        // 1. 이메일로 사용자 조회
+        UserEntity user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(()-> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        // 2. 기존 비밀번호 일치 여부 확인
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new AuthException(ErrorResponseEnum.INVALID_PASSWORD);
+        }
+
+        // 3. 새 비밀번호 암호화 및 저장
+        String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+        user.changePassword(encodedNewPassword);
+        userRepository.save(user);
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.security.constant.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
@@ -35,15 +35,20 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String email;
 
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
     @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .toList();
     }
 
     @Override

@@ -32,13 +32,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //User 데이터가 존재한다면 UserDetails 객체로 만듦
     public UserDetails createUserDetails(UserEntity user){
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
 
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRoles().toArray(new String[0]))
+                .authorities(authorities)
                 .build();
     }
 }
