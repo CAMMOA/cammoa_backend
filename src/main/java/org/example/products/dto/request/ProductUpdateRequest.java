@@ -3,6 +3,8 @@ package org.example.products.dto.request;
 import lombok.Getter;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Future;
+import org.example.products.repository.entity.CategoryEnum;
+
 import java.time.LocalDateTime;
 
 
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 public class ProductUpdateRequest {
 
     private String title;
-    private String category;
+    private CategoryEnum category;
     private String description;
     @Positive
     private Integer price;
