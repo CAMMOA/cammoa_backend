@@ -1,12 +1,20 @@
 package org.example.products.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.exception.CustomException;
 import org.example.products.dto.request.ProductCreateRequest;
+import org.example.products.dto.request.ProductUpdateRequest;
+import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
+import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.ProductRepository;
-import org.example.exception.impl.InvalidRequestException;
+import org.example.users.repository.UserRepository;
+import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
@@ -16,21 +24,27 @@ import java.time.LocalDateTime;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
         if (request.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new InvalidRequestException("마감일은 현재 시각보다 이후여야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_DEADLINE);
         }
 
         if (request.getMaxParticipants() < request.getNumPeople()) {
-            throw new InvalidRequestException("최대 인원은 현재 참여 인원보다 커야 합니다.");
+            throw new CustomException(ErrorResponseEnum.INVALID_MAX_PARTICIPANTS);
+
         }
 
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.USER_NOT_FOUND));
+
+
         ProductEntity product = ProductEntity.builder()
-                .userId(userId)
+                .user(user)
                 .title(request.getTitle())
-                .category(request.getCategory())
+                .category(CategoryEnum.valueOf(request.getCategory()))
                 .description(request.getDescription())
                 .image(request.getImage())
                 .price(request.getPrice())
@@ -39,6 +53,7 @@ public class ProductService {
                 .place(request.getPlace())
                 .status(request.getStatus())
                 .maxParticipants(request.getMaxParticipants())
+                .currentParticipants(1)  // 생성 시 본인 자동 참여
                 .build();
 
         ProductEntity saved = productRepository.save(product);
@@ -82,7 +97,7 @@ public class ProductService {
         return ProductResponse.builder()
                 .productId(product.getProductId())
                 .title(product.getTitle())
-                .category(product.getCategory())
+                .category(product.getCategory().name())
                 .description(product.getDescription())
                 .image(product.getImage())
                 .price(product.getPrice())
@@ -97,7 +112,60 @@ public class ProductService {
                 .build();
     }
 
+    public ProductDetailResponse getProductDetail(Long productId) {
+        ProductEntity product = productRepository.findByIdWithUser(productId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
+
+
+        return ProductDetailResponse.builder()
+                .productId(product.getProductId())
+                .title(product.getTitle())
+                .description(product.getDescription())
+                .category(product.getCategory().name())
+                .image(product.getImage())
+                .price(product.getPrice())
+                .deadline(product.getDeadline())
+                .place(product.getPlace())
+                .currentParticipants(product.getCurrentParticipants())
+                .maxParticipants(product.getMaxParticipants())
+                .status(product.getStatus())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .username(product.getUser().getUsername())  // 작성자 이름
+                .build();
+    }
+
+    public List<ProductResponse> searchProductsByKeyword(String keyword) {
+        List<ProductEntity> products = productRepository
+                .findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+
+        if (products.isEmpty()) {
+            throw new CustomException(ErrorResponseEnum.POST_NOT_FOUND);
+        }
+
+        return products.stream()
+                .map(this::toProductResponse)
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
+        ProductEntity product = productRepository.findByIdWithUser(postId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        if (!product.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
+        }
+
+        if (request.getTitle() != null) product.setTitle(request.getTitle());
+        if (request.getCategory() != null) product.setCategory(request.getCategory());
+        if (request.getDescription() != null) product.setDescription(request.getDescription());
+        if (request.getPrice() != null) product.setPrice(request.getPrice());
+        if (request.getDeadline() != null) product.setDeadline(request.getDeadline());
+        if (request.getPlace() != null) product.setPlace(request.getPlace());
+        if (request.getImage() != null) product.setImage(request.getImage());
+
+        return toProductResponse(product);
+    }
+
+
 }
-
-
-

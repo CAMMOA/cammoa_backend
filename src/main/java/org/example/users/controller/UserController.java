@@ -3,11 +3,15 @@ package org.example.users.controller;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
+import org.example.security.dto.JwtToken;
+import org.example.users.dto.request.ChangePasswordRequest;
+import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.service.UserService;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -58,6 +63,34 @@ public class UserController {
         return ResponseEntity.ok(
                 CommonResponseEntity.builder()
                         .response(SuccessResponseEnum.EMAIL_VERIFICATION_SUCCESS)
+                        .build()
+        );
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+        JwtToken jwtToken = userService.login(email, password);
+
+        log.info("request email = {}, password = {}", email, password);
+        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+
+        return ResponseEntity.ok(
+            CommonResponseEntity.builder()
+                    .data(jwtToken)
+                    .response(SuccessResponseEnum.LOGIN_SUCCESS)
+                    .build()
+        );
+    }
+
+    @PostMapping("/users/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.PASSWORD_CHANGED)
                         .build()
         );
     }

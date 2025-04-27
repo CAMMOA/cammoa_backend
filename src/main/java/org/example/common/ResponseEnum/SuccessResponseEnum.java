@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum SuccessResponseEnum implements Response {
     RESOURCES_CREATED(HttpStatus.CREATED, "Resources Created"),
+    LOGIN_SUCCESS(HttpStatus.OK, "Login Successful"),
+    PASSWORD_CHANGED(HttpStatus.OK, "Password Changed"),
 
     EMAIL_SEND_SUCCESS(HttpStatus.OK, "Email Successfully Sent"),
-    EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed");
+    EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
+    REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully");
 
     private final HttpStatus httpStatus;
     private final String message;
