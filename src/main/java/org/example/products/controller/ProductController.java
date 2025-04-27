@@ -9,6 +9,7 @@ import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.service.ProductService;
+import org.example.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,12 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-
+    private final JwtTokenProvider jwtTokenProvider;
     @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request) {
-        Long mockUserId = 1L; // 추후 JWT 토큰에서 추출 예정
-        ProductResponse response = productService.createProduct(request, mockUserId);
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtTokenProvider.getUserId(token);
+        ProductResponse response = productService.createProduct(request, userId);
         URI location = URI.create("/api/posts/" + response.getProductId());
 
         return ResponseEntity.created(location)
@@ -103,10 +105,10 @@ public class ProductController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable Long postId,
-                                        @RequestBody ProductUpdateRequest request) {
-        Long mockUserId = 1L; // 추후 로그인 연동 시 교체 예정
-
-        ProductResponse response = productService.updateProduct(postId, request, mockUserId);
+                                        @RequestBody @Valid ProductUpdateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtTokenProvider.getUserId(token);
+        ProductResponse response = productService.updateProduct(postId, request, userId);
 
         return ResponseEntity.ok(
                 CommonResponseEntity.<ProductResponse>builder()

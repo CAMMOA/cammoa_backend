@@ -7,6 +7,7 @@ import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
+import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
@@ -43,7 +44,7 @@ public class ProductService {
         ProductEntity product = ProductEntity.builder()
                 .user(user)
                 .title(request.getTitle())
-                .category(request.getCategory())
+                .category(CategoryEnum.valueOf(request.getCategory()))
                 .description(request.getDescription())
                 .image(request.getImage())
                 .price(request.getPrice())
@@ -52,6 +53,7 @@ public class ProductService {
                 .place(request.getPlace())
                 .status(request.getStatus())
                 .maxParticipants(request.getMaxParticipants())
+                .currentParticipants(1)  // 생성 시 본인 자동 참여
                 .build();
 
         ProductEntity saved = productRepository.save(product);
@@ -95,7 +97,7 @@ public class ProductService {
         return ProductResponse.builder()
                 .productId(product.getProductId())
                 .title(product.getTitle())
-                .category(product.getCategory())
+                .category(product.getCategory().name())
                 .description(product.getDescription())
                 .image(product.getImage())
                 .price(product.getPrice())
@@ -119,7 +121,7 @@ public class ProductService {
                 .productId(product.getProductId())
                 .title(product.getTitle())
                 .description(product.getDescription())
-                .category(product.getCategory())
+                .category(product.getCategory().name())
                 .image(product.getImage())
                 .price(product.getPrice())
                 .deadline(product.getDeadline())
