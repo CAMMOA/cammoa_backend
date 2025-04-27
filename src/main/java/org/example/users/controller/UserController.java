@@ -11,6 +11,7 @@ import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
+import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
@@ -91,6 +92,16 @@ public class UserController {
         return ResponseEntity.ok(
                 CommonResponseEntity.builder()
                         .response(SuccessResponseEnum.PASSWORD_CHANGED)
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId, @Valid @RequestBody DeleteUserRequest request) {
+        userService.deleteUser(userId, request.getPassword());
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.WITHDRAWAL_SUCCESS)
                         .build()
         );
     }

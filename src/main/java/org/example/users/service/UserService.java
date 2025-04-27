@@ -5,6 +5,7 @@ import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
+import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,4 +18,5 @@ public interface UserService {
     void validationAuthCode(@RequestBody ValidateEmailRequest request);
     JwtToken login(String email, String password);
     void changePassword(@RequestBody ChangePasswordRequest request);
+    void deleteUser(Long userId, String password);
 }

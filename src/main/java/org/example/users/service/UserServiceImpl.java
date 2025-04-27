@@ -14,6 +14,7 @@ import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
+import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
@@ -145,5 +146,19 @@ public class UserServiceImpl implements UserService {
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
         user.changePassword(encodedNewPassword);
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId, String password){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        //비밀번호 확인
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new AuthException(ErrorResponseEnum.INVALID_PASSWORD);
+        }
+
+        userRepository.delete(user);
     }
 }

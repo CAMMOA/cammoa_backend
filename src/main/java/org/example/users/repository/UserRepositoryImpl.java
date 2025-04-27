@@ -38,4 +38,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<UserEntity> findByEmail(String email) {return userJpaRepository.findByEmail(email);}
 
+    @Override
+    public void delete(UserEntity user) {
+        userJpaRepository.delete(user);
+    }
 }
