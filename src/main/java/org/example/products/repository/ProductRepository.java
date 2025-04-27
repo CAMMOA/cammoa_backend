@@ -13,10 +13,9 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
-    // 오늘의 공동구매 추천: DB에서 랜덤으로 가져옴옴
+    // 오늘의 공동구매 추천: DB에서 랜덤으로 가져옴
     @Query(value = "SELECT * FROM product_entity ORDER BY RAND() LIMIT 8", nativeQuery = true)
     List<ProductEntity> findRandomRecommendedProducts();
-
 
     // 곧 마감되는 공구: 마감일이 오늘 이후인 공구 중 마감일이 가까운 순
     @Query("SELECT p FROM ProductEntity p WHERE p.deadline >= CURRENT_DATE ORDER BY p.deadline ASC")
