@@ -4,10 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.common.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
+import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
+import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.service.ProductService;
 import org.example.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
@@ -93,8 +95,19 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword) {
-        List<ProductResponse> products = productService.searchProductsByKeyword(keyword);
+    public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword, @RequestParam(value = "category", required = false) String category, @RequestParam(value = "sortTypeEnum", defaultValue = "DEADLINE") SortTypeEnum sortTypeEnum) {
+
+        CategoryEnum categoryEnum = null;
+        if (category != null && !category.isBlank()) {
+            try {
+                categoryEnum = CategoryEnum.valueOf(category);
+            } catch (IllegalArgumentException e) {
+                categoryEnum = null; // 잘못된 값이 들어오면 null 처리
+            }
+        }
+
+        List<ProductResponse> products =  productService.searchProductsByKeywordAndCategory(keyword, categoryEnum, sortTypeEnum);
+
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductResponse>>builder()
                         .data(products)

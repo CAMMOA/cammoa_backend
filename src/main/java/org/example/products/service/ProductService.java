@@ -3,6 +3,7 @@ package org.example.products.service;
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.CustomException;
+import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
@@ -135,18 +136,7 @@ public class ProductService {
                 .build();
     }
 
-    public List<ProductResponse> searchProductsByKeyword(String keyword) {
-        List<ProductEntity> products = productRepository
-                .findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
 
-        if (products.isEmpty()) {
-            throw new CustomException(ErrorResponseEnum.POST_NOT_FOUND);
-        }
-
-        return products.stream()
-                .map(this::toProductResponse)
-                .collect(Collectors.toList());
-    }
     @Transactional
     public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
         ProductEntity product = productRepository.findByIdWithUser(postId)
@@ -167,5 +157,43 @@ public class ProductService {
         return toProductResponse(product);
     }
 
+    public List<ProductResponse> searchProductsByKeywordAndCategory(String keyword, CategoryEnum category, SortTypeEnum sortTypeEnum) {
+        if (sortTypeEnum == null) {
+            sortTypeEnum = SortTypeEnum.DEADLINE;
+        }
+
+        String categoryEnum =  (category != null) ? category.name() : null;
+        List<ProductEntity> products = productRepository.searchProductsByKeywordAndCategory(
+                keyword,
+                category,
+                sortTypeEnum.name()
+        );
+
+        return products.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    // ProductEntity를 ProductResponse로 변환
+    private ProductResponse convertToResponse(ProductEntity product) {
+        return ProductResponse.builder()
+                .productId(product.getProductId())
+                .title(product.getTitle())
+                .category(product.getCategory().name())
+                .description(product.getDescription())
+                .image(product.getImage())
+                .price(product.getPrice())
+                .deadline(product.getDeadline())
+                .numPeople(product.getNumPeople())
+                .place(product.getPlace())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .status(product.getStatus())
+                .currentParticipants(product.getCurrentParticipants())
+                .maxParticipants(product.getMaxParticipants())
+                .build();
+    }
 
 }
+

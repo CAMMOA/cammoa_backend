@@ -1,5 +1,7 @@
 package org.example.products.repository;
 
+import org.example.products.constant.SortTypeEnum;
+import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,10 +26,22 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     // 방금 올라온 공구: 최근 24시간 내에 생성된 공구
     @Query("SELECT p FROM ProductEntity p WHERE p.createdAt >= :since ORDER BY p.createdAt DESC")
     List<ProductEntity> findRecentProducts(@Param("since") LocalDateTime since);
-
+    // 게시글, 작성자 조인 조회
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :productId")
     Optional<ProductEntity> findByIdWithUser(@Param("productId") Long productId);
 
-    List<ProductEntity> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
-
+    //게시글 검식 시 카테고리, 추천, 최신, 마감순 조회
+    @Query("SELECT p FROM ProductEntity p " +
+            "WHERE (:keyword IS NULL OR :keyword = '' OR p.title LIKE %:keyword% OR p.description LIKE %:keyword%) " +
+            "AND (:category IS NULL OR p.category = :category) " +
+            "ORDER BY " +
+            "CASE WHEN :sortType = 'DEADLINE' THEN p.deadline END ASC, " +
+            "CASE WHEN :sortType = 'RECENT' THEN p.createdAt END DESC, " +
+            "CASE WHEN :sortType = 'RECOMMEND' THEN function('RAND') END")
+    List<ProductEntity> searchProductsByKeywordAndCategory(
+            @Param("keyword") String keyword,
+            @Param("category") CategoryEnum category, // 여기 category를 String 말고 CategoryEnum으로 직접
+            @Param("sortType") String sortType
+    );
 }
+
