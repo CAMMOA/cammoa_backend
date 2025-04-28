@@ -14,6 +14,7 @@ import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class UserController {
     private final EmailService emailService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request){
+    public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request) {
 
         UserResponse response = userService.signup(request);
         URI location = URI.create("api/auth/users" + response.getId());
@@ -78,10 +79,10 @@ public class UserController {
         log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
 
         return ResponseEntity.ok(
-            CommonResponseEntity.builder()
-                    .data(jwtToken)
-                    .response(SuccessResponseEnum.LOGIN_SUCCESS)
-                    .build()
+                CommonResponseEntity.builder()
+                        .data(jwtToken)
+                        .response(SuccessResponseEnum.LOGIN_SUCCESS)
+                        .build()
         );
     }
 
@@ -102,6 +103,18 @@ public class UserController {
         return ResponseEntity.ok(
                 CommonResponseEntity.builder()
                         .response(SuccessResponseEnum.WITHDRAWAL_SUCCESS)
+                        .build()
+        );
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authorizationHeader) {
+        ProfileResponse response = userService.getProfile(authorizationHeader);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<ProfileResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }
