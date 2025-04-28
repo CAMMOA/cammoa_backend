@@ -16,6 +16,7 @@ import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
         try {
             UserEntity userEntity = UserEntity.builder()
                     .username(request.getUsername())
+                    .nickname(request.getUsername())
                     .password(encodedPassword)
                     .email(request.getEmail())
                     .roles(List.of(ROLE_USER))
@@ -161,4 +163,22 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
+    @Override
+    @Transactional
+    public ProfileResponse getProfile(String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtTokenProvider.getUserId(token);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        return ProfileResponse.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .myGroupBuyings(new ArrayList<>())      // 작성한 공동구매 목록 (지금은 빈 리스트)
+                .joinedGroupBuyings(new ArrayList<>())  // 참여한 공동구매 목록 (지금은 빈 리스트)
+                .notifications(new ArrayList<>())       // 나의 알림 목록 (지금은 빈 리스트)
+                .build();
+    }
+
 }

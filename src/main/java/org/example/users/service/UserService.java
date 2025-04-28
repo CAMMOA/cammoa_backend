@@ -7,6 +7,7 @@ import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,4 +20,5 @@ public interface UserService {
     JwtToken login(String email, String password);
     void changePassword(@RequestBody ChangePasswordRequest request);
     void deleteUser(Long userId, String password);
+    ProfileResponse getProfile(String authorizationHeader);
 }
