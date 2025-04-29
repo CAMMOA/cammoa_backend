@@ -10,11 +10,15 @@ import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ResourceException;
+import org.example.products.dto.response.ProductSimpleResponse;
+import org.example.products.repository.ProductRepository;
+import org.example.products.repository.entity.ProductEntity;
 import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -62,6 +67,7 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = UserEntity.builder()
                     .nickname(request.getNickname())
                     .username(request.getUsername())
+                    .nickname(request.getUsername())
                     .password(encodedPassword)
                     .email(request.getEmail())
                     .roles(List.of(ROLE_USER))
@@ -159,4 +165,53 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
+    @Override
+    @Transactional
+    public ProfileResponse getProfile(String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtTokenProvider.getUserId(token);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        List<ProductEntity> products = productRepository.findByUser(user);
+
+        List<ProductSimpleResponse> myGroupBuyings = products.stream()
+                .map(product -> ProductSimpleResponse.builder()
+                        .productId(product.getProductId())
+                        .imageUrl(product.getImage())
+                        .title(product.getTitle())
+                        .currentParticipants(product.getCurrentParticipants())
+                        .maxParticipants(product.getMaxParticipants())
+                        .build())
+                .toList();
+
+        return ProfileResponse.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .myGroupBuyings(myGroupBuyings)      // 작성한 공동구매 목록
+                .joinedGroupBuyings(new ArrayList<>())  // 참여한 공동구매 목록 (지금은 빈 리스트)
+                .notifications(new ArrayList<>())       // 나의 알림 목록 (지금은 빈 리스트)
+                .build();
+    }
+    @Override
+    @Transactional
+    public List<ProductSimpleResponse> getMyGroupBuyings(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        List<ProductEntity> products = productRepository.findByUser(user);
+
+        return products.stream()
+                .map(product -> ProductSimpleResponse.builder()
+                        .productId(product.getProductId())
+                        .imageUrl(product.getImage())
+                        .title(product.getTitle())
+                        .currentParticipants(product.getCurrentParticipants())
+                        .maxParticipants(product.getMaxParticipants())
+                        .build())
+                .toList();
+    }
+
+
 }

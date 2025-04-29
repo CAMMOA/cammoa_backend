@@ -3,6 +3,8 @@ package org.example.products.service;
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.CustomException;
+import org.example.exception.impl.AuthException;
+import org.example.exception.impl.ResourceException;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
@@ -30,16 +32,16 @@ public class ProductService {
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
         if (request.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new CustomException(ErrorResponseEnum.INVALID_DEADLINE);
+            throw new ResourceException(ErrorResponseEnum.INVALID_DEADLINE);
         }
 
         if (request.getMaxParticipants() < request.getNumPeople()) {
-            throw new CustomException(ErrorResponseEnum.INVALID_MAX_PARTICIPANTS);
+            throw new ResourceException(ErrorResponseEnum.INVALID_MAX_PARTICIPANTS);
 
         }
 
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorResponseEnum.USER_NOT_FOUND));
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
 
         ProductEntity product = ProductEntity.builder()
@@ -115,7 +117,7 @@ public class ProductService {
 
     public ProductDetailResponse getProductDetail(Long productId) {
         ProductEntity product = productRepository.findByIdWithUser(productId)
-                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
 
 
         return ProductDetailResponse.builder()
@@ -140,10 +142,10 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
         ProductEntity product = productRepository.findByIdWithUser(postId)
-                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND));
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         if (!product.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
+            throw new AuthException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
         }
 
         if (request.getTitle() != null) product.setTitle(request.getTitle());

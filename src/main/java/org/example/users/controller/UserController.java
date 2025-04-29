@@ -10,17 +10,20 @@ import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.exception.impl.ResourceException;
+import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -32,7 +35,7 @@ public class UserController {
     private final EmailService emailService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request){
+    public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request) {
 
         if(!request.getPassword().equals(request.getConfirmPassword())){
             throw new ResourceException()
