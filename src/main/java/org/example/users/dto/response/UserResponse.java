@@ -9,10 +9,11 @@ import org.example.users.repository.entity.UserEntity;
 public class UserResponse {
 
     private Long id;
+    private String nickname;
     private String username;
     private String email;
 
     public static UserResponse from(UserEntity user) {
-        return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
+        return new UserResponse(user.getId(), user.getNickname(), user.getUsername(), user.getEmail());
     }
 }

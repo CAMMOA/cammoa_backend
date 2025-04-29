@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.CommonResponseEntity;
+import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
@@ -38,7 +39,7 @@ public class UserController {
     public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request) {
 
         if(!request.getPassword().equals(request.getConfirmPassword())){
-            throw new ResourceException()
+            throw new ResourceException(ErrorResponseEnum.PASSWORDS_DO_NOT_MATCH);
         }
         UserResponse response = userService.signup(request);
         URI location = URI.create("/api/auth/users" + response.getId());
@@ -109,6 +110,30 @@ public class UserController {
         return ResponseEntity.ok(
                 CommonResponseEntity.builder()
                         .response(SuccessResponseEnum.WITHDRAWAL_SUCCESS)
+                        .build()
+        );
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authorizationHeader) {
+        ProfileResponse response = userService.getProfile(authorizationHeader);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<ProfileResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
+    @GetMapping("/users/{userId}/group-buyings")
+    public ResponseEntity<?> getMyGroupBuyings(@PathVariable Long userId) {
+        List<ProductSimpleResponse> response = userService.getMyGroupBuyings(userId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<ProductSimpleResponse>>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
         );
     }

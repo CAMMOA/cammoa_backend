@@ -32,9 +32,6 @@ public class UserEntity implements UserDetails {
     private String nickname;
 
     @Column(nullable = false)
-    private String nickname;
-
-    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)

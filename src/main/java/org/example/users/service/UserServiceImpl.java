@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = UserEntity.builder()
                     .nickname(request.getNickname())
                     .username(request.getUsername())
-                    .nickname(request.getUsername())
                     .password(encodedPassword)
                     .email(request.getEmail())
                     .roles(List.of(ROLE_USER))
