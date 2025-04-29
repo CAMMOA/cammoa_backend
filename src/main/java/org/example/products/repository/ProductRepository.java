@@ -3,6 +3,7 @@ package org.example.products.repository;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
+import org.example.users.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,5 +44,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             @Param("category") CategoryEnum category, // 여기 category를 String 말고 CategoryEnum으로 직접
             @Param("sortType") String sortType
     );
+    List<ProductEntity> findByUser(UserEntity user);
 }
 

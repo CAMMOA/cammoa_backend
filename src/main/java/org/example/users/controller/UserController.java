@@ -9,6 +9,7 @@ import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
+import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -113,6 +115,18 @@ public class UserController {
 
         return ResponseEntity.ok(
                 CommonResponseEntity.<ProfileResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
+    @GetMapping("/users/{userId}/group-buyings")
+    public ResponseEntity<?> getMyGroupBuyings(@PathVariable Long userId) {
+        List<ProductSimpleResponse> response = userService.getMyGroupBuyings(userId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<ProductSimpleResponse>>builder()
                         .data(response)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
