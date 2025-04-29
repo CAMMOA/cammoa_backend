@@ -9,6 +9,7 @@ import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
+import org.example.exception.impl.ResourceException;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
@@ -33,8 +34,11 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request){
 
+        if(!request.getPassword().equals(request.getConfirmPassword())){
+            throw new ResourceException()
+        }
         UserResponse response = userService.signup(request);
-        URI location = URI.create("api/auth/users" + response.getId());
+        URI location = URI.create("/api/auth/users" + response.getId());
 
         return ResponseEntity.created(location)
                 .body(CommonResponseEntity.<UserResponse>builder()

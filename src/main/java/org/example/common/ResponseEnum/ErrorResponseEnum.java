@@ -23,6 +23,7 @@ public enum ErrorResponseEnum implements Response {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found"),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글에 대한 권한이 없습니다."),
+    PASSWORDS_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "Passwords Do Not Match"),
 
     //게시글
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 올바른 타입을 입력해주세요."),

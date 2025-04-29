@@ -1,6 +1,8 @@
 package org.example.users.repository.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,13 +28,18 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String nickname;
+
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
+    @Size(min = 8)
     private String password;
 
     @Column(nullable = false)
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@hufs\\.ac\\.kr$")
     private String email;
 
     public void changePassword(String newPassword) {

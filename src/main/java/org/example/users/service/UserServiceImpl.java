@@ -14,7 +14,6 @@ import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
-import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
@@ -46,8 +45,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse signup(@Valid @RequestBody UserCreateRequest request) {
-        List<Enum> roles = new ArrayList<>();
-        roles.add(ROLE_USER);
 
         //유저 중복 확인
         if(userRepository.existsByUsername(request.getUsername())){
@@ -63,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             UserEntity userEntity = UserEntity.builder()
+                    .nickname(request.getNickname())
                     .username(request.getUsername())
                     .password(encodedPassword)
                     .email(request.getEmail())
