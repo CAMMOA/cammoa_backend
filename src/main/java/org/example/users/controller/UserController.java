@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.CommonResponseEntity;
+import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;

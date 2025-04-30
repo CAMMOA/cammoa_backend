@@ -5,7 +5,6 @@ import org.example.security.JwtTokenProvider;
 import org.example.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -31,9 +30,7 @@ public class SecurityConfig {
                 //JWT를 사용하기 때문에 세션 사용 X
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                .authorizeHttpRequests(a -> a.requestMatchers("/api/auth/signup", "/api/auth/login", "/connect").permitAll()
                         .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

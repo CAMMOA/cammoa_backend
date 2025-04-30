@@ -1,7 +1,8 @@
-package org.example.common;
+package org.example.common.repository.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.common.Response;
 import org.springframework.http.HttpStatus;
 
 @Getter
