@@ -37,6 +37,7 @@ public enum ErrorResponseEnum implements Response {
 
     //채팅방
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found");
+
     private final HttpStatus httpStatus;
     private final String message;
 }

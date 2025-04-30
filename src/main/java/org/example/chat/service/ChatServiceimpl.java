@@ -1,10 +1,13 @@
 package org.example.chat.service;
 
 import lombok.AllArgsConstructor;
-import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.dto.request.ChatMessageRequest;
+import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.dto.response.GetChatRoomsResponse;
-import org.example.chat.repository.*;
+import org.example.chat.repository.ChatMessageRepository;
+import org.example.chat.repository.ChatParticipantRepository;
+import org.example.chat.repository.ChatRoomRepository;
+import org.example.chat.repository.ReadStatusRepository;
 import org.example.chat.repository.entity.ChatMessageEntity;
 import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
@@ -22,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.example.common.ResponseEnum.ErrorResponseEnum.CHATROOM_NOT_FOUND;
 import static org.example.common.ResponseEnum.ErrorResponseEnum.POST_NOT_FOUND;
 
 @Service
@@ -100,5 +106,39 @@ public class ChatServiceimpl implements ChatService {
 
         List<GetChatRoomsResponse> response = chatRoomRepository.findByUser(user);
 
+    }
+
+    public List<String> joinChatRoom(Long roomId) {
+        //채팅방 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new ChatException(CHATROOM_NOT_FOUND));
+
+        //유저 조회
+        //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        //참여자인지 확인
+        Optional<ChatParticipantEntity> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
+        if(!participant.isPresent()){
+            addParticipantToRoom(chatRoom, user);
+        }
+
+        //전체 참여자 이름 리스트 반환
+        List<ChatParticipantEntity> participants = chatParticipantRepository.findByChatRoom(chatRoom);
+        List<String> participantNicknames = participants.stream()
+                .map(p -> p.getUser().getNickname())
+                .collect(Collectors.toList());
+
+        return participantNicknames;
+    }
+
+    //ChatParticipant객체 생성 후 저장
+    public void addParticipantToRoom(ChatRoomEntity chatRoom, UserEntity user) {
+        ChatParticipantEntity chatParticipant = ChatParticipantEntity.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipantRepository.save(chatParticipant);
     }
 }

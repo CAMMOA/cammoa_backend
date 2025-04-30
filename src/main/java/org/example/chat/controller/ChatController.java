@@ -41,4 +41,16 @@ public class ChatController {
                         .build()
         );
     }
+
+    //채팅방 참여
+    @PostMapping("/rooms/{roomId}/join")
+    public ResponseEntity<?> joinChatRoom(@PathVariable Long roomId) {
+        List<String> participantNicknames = chatService.joinChatRoom(roomId);
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<String>>builder()
+                        .data(participantNicknames)
+                        .response(SuccessResponseEnum.CHATROOM_JOIN_SUCCESS)
+                        .build()
+        );
+    }
 }
