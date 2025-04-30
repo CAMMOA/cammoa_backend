@@ -2,7 +2,7 @@ package org.example.products.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.common.CommonResponseEntity;
+import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;

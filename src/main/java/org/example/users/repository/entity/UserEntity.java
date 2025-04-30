@@ -48,6 +48,7 @@ public class UserEntity implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('ROLE_USER', 'ROLE_ADMIN')")
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 

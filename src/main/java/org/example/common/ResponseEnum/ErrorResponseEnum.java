@@ -33,8 +33,10 @@ public enum ErrorResponseEnum implements Response {
 
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
-    DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email");
+    DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email"),
 
+    //채팅방
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found");
     private final HttpStatus httpStatus;
     private final String message;
 }

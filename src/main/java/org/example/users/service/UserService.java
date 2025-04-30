@@ -6,13 +6,11 @@ import org.example.email.dto.response.SendEmailResponse;
 import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
-import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.UserCreateRequest;
 import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
 
 public interface UserService {

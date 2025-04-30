@@ -22,7 +22,7 @@ public class ProductEntity {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "ENUM('FOOD', 'WATER_DRINK', 'LIVING', 'STATIONERY', 'BEAUTY'")
     private CategoryEnum category;
 
     @Column(nullable = false)

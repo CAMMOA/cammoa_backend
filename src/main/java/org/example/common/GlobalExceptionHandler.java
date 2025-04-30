@@ -1,5 +1,6 @@
 package org.example.common;
 
+import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.exception.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
