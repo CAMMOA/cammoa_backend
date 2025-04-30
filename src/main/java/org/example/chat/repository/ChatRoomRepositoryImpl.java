@@ -3,6 +3,7 @@ package org.example.chat.repository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.chat.repository.entity.ChatRoomEntity;
+import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -18,4 +19,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public Optional<ChatRoomEntity> findById(Long roomId){return chatRoomJpaRepository.findById(roomId);}
+
+    @Override
+    public Optional<ChatRoomEntity> findByUser(UserEntity user){return chatRoomJpaRepository.findByUser(user);}
 }

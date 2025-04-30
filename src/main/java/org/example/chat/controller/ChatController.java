@@ -10,6 +10,8 @@ import org.example.common.repository.entity.CommonResponseEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/chats")
 @AllArgsConstructor
@@ -28,4 +30,15 @@ public class ChatController {
         );
     }
 
+    //채팅 목록 조회
+    @GetMapping("/rooms/list")
+    public ResponseEntity<?> getChatRooms() {
+        List<GetChatRoomsResponse> chatRooms = chatService.getChatRooms();
+        return ResponseEntity.ok(
+                CommonResponseEntity.<GetChatRoomsResponse>builder()
+                        .data(chatRooms)
+                        .response(SuccessResponseEnum.RESOURCES_CREATED)
+                        .build()
+        );
+    }
 }
