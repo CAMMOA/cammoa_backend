@@ -17,7 +17,9 @@ public enum SuccessResponseEnum implements Response {
     EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
     REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully"),
 
-    CHATROOM_JOIN_SUCCESS(HttpStatus.OK, "User Joined The Chat Room Successfully");
+    CHATROOM_JOIN_SUCCESS(HttpStatus.OK, "User Joined The Chat Room Successfully"),
+
+    POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully");
 
     private final HttpStatus httpStatus;
     private final String message;

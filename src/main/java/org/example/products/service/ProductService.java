@@ -197,5 +197,17 @@ public class ProductService {
                 .build();
     }
 
+    @Transactional
+    public void deleteProduct(Long postId, Long userId) {
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(postId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        if (!product.getUser().getId().equals(userId)) {
+            throw new AuthException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
+        }
+
+        product.setDeletedAt(LocalDateTime.now());
+    }
+
 }
 
