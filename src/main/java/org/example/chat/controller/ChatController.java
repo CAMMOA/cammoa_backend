@@ -3,7 +3,7 @@ package org.example.chat.controller;
 import lombok.AllArgsConstructor;
 import org.example.chat.dto.request.CreateChatRoomRequest;
 import org.example.chat.dto.response.CreateChatRoomResponse;
-import org.example.chat.dto.response.GetChatRoomsResponse;
+//import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.chat.service.ChatService;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;

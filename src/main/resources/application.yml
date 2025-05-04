@@ -34,3 +34,9 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+
+profiles:
+  active: local
+
+file:
+  upload-dir: uploads/
