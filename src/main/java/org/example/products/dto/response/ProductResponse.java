@@ -21,5 +21,14 @@ public class ProductResponse {
     private String status;
     private int currentParticipants;
     private int maxParticipants;
-    
+    private Long chatRoomId;
+    private String chatRoomName;
+
+    public void setChatRoomId(Long chatRoomId) {
+        this.chatRoomId = chatRoomId;
+    }
+
+    public void setChatRoomName(String chatRoomName) {
+        this.chatRoomName = chatRoomName;
+    }
 }
