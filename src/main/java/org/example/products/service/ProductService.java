@@ -10,7 +10,10 @@ import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
+import org.example.products.repository.ProductRepository;
+import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.entity.CategoryEnum;
+import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
@@ -18,6 +21,7 @@ import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
@@ -28,6 +32,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ParticipationRepository participationRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -208,6 +213,39 @@ public class ProductService {
 
         product.setDeletedAt(LocalDateTime.now());
     }
+
+    @Transactional
+    public void joinGroupBuying(Long postId, Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        ProductEntity product = productRepository.findById(postId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        if (participationRepository.existsByUserAndProduct(user, product)) {
+            throw new CustomException(ErrorResponseEnum.ALREADY_JOINED);
+        }
+
+        if (product.getDeadline().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorResponseEnum.POST_CLOSED);
+        }
+
+        if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+            throw new CustomException(ErrorResponseEnum.POST_FULL);
+        }
+
+        ParticipationEntity participation = ParticipationEntity.builder()
+                .user(user)
+                .product(product)
+                .joinedAt(LocalDateTime.now())
+                .build();
+
+        participationRepository.save(participation);
+
+        // 현재 인원 수 증가
+        product.setCurrentParticipants(product.getCurrentParticipants() + 1);
+    }
+
 
 }
 

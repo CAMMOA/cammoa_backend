@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum SuccessResponseEnum implements Response {
     RESOURCES_CREATED(HttpStatus.CREATED, "Resources Created"),
+    REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully"),
+    RESOURCES_GET(HttpStatus.OK, "Resourses Is Got Successfully"),
+
     LOGIN_SUCCESS(HttpStatus.OK, "Login Successful"),
     PASSWORD_CHANGED(HttpStatus.OK, "Password Changed"),
     WITHDRAWAL_SUCCESS(HttpStatus.OK, "User Withdrawal Success"),
@@ -16,11 +19,10 @@ public enum SuccessResponseEnum implements Response {
     EMAIL_SEND_SUCCESS(HttpStatus.OK, "Email Successfully Sent"),
     EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
 
-    REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully"),
-
-    RESOURCES_GET(HttpStatus.OK, "Resourses Is Got Successfully"),
-    POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully");
-
+    //게시글
+    POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully"),
+    //공동구매 참여
+    JOIN_SUCCESS(HttpStatus.OK, "You have successfully joined the group buying.");
     private final HttpStatus httpStatus;
     private final String message;
 }
