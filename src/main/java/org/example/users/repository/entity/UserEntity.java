@@ -31,14 +31,14 @@ public class UserEntity implements UserDetails {
     @Column(unique = true, nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     @Size(min = 8)
     private String password;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@hufs\\.ac\\.kr$")
     private String email;
 
