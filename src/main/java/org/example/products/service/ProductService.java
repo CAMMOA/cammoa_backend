@@ -31,6 +31,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
         if (request.getDeadline().isBefore(LocalDateTime.now())) {
