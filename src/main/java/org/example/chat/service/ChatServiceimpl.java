@@ -100,14 +100,6 @@ public class ChatServiceimpl implements ChatService {
         return new CreateChatRoomResponse(chatRoom.getChatRoomId(), chatRoom.getChatRoomName());
     }
 
-    public List<GetChatRoomsResponse> getChatRooms(){
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
-
-        List<GetChatRoomsResponse> response = chatRoomRepository.findByUser(user);
-
-    }
-
     public List<String> joinChatRoom(Long roomId) {
         //채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)

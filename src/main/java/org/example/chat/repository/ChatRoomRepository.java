@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface ChatRoomRepository {
     ChatRoomEntity save(ChatRoomEntity chatRoom);
     Optional<ChatRoomEntity> findById(Long roomId);
-    Optional<ChatRoomEntity> findByProduct(ProductEntity product);
 }

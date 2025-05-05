@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Long> {
     ChatRoomEntity save(ChatRoomEntity chatRoom);
     Optional<ChatRoomEntity> findById(Long roomId);
-    Optional<ChatRoomEntity> findByProduct(ProductEntity product);
 }

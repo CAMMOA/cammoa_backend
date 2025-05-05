@@ -18,7 +18,4 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public Optional<ChatRoomEntity> findById(Long roomId){return chatRoomJpaRepository.findById(roomId);}
-
-    @Override
-    public Optional<ChatRoomEntity> findByProduct(ProductEntity product){return chatRoomJpaRepository.findByProduct(product);}
 }
