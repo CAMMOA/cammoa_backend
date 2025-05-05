@@ -99,7 +99,7 @@ public class ChatServiceimpl implements ChatService {
         UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        List<ChatRoomEntity> chatRooms = chatRoomRepository.findByUser(user);
+        List<ChatRoomEntity> chatRooms = chatRoomRepository.findByChatParticipantsUser(user);
 
         List<GetChatRoomsResponse> getChatRooms = new ArrayList<>();
         for(ChatRoomEntity c: chatRooms) {

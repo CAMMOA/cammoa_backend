@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface ChatRoomRepository {
     ChatRoomEntity save(ChatRoomEntity chatRoom);
     Optional<ChatRoomEntity> findById(Long roomId);
-    List<ChatRoomEntity> findByUser(UserEntity user);
+    List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user);
 }
