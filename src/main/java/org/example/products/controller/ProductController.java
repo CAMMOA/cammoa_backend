@@ -2,8 +2,9 @@ package org.example.products.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.common.repository.entity.CommonResponseEntity;
+import org.example.chat.dto.response.JoinChatRoomResponse;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
+import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
@@ -145,5 +146,17 @@ public class ProductController {
         );
     }
 
+    //채팅방 참여
+    @PostMapping("/{postId}/chat/join")
+    public ResponseEntity<?> joinChatRoom(@PathVariable Long postId) {
 
+        JoinChatRoomResponse response = productService.joinChatRoom(postId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<JoinChatRoomResponse>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.CHATROOM_JOIN_SUCCESS)
+                        .build()
+        );
+    }
 }

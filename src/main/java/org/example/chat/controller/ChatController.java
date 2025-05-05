@@ -3,14 +3,14 @@ package org.example.chat.controller;
 import lombok.AllArgsConstructor;
 import org.example.chat.dto.request.CreateChatRoomRequest;
 import org.example.chat.dto.response.CreateChatRoomResponse;
-import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.chat.service.ChatService;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/chats")
@@ -30,15 +30,4 @@ public class ChatController {
         );
     }
 
-    //채팅 목록 조회
-    @GetMapping("/rooms/list")
-    public ResponseEntity<?> getChatRooms() {
-        List<GetChatRoomsResponse> chatRooms = chatService.getChatRooms();
-        return ResponseEntity.ok(
-                CommonResponseEntity.<List<GetChatRoomsResponse>>builder()
-                        .data(chatRooms)
-                        .response(SuccessResponseEnum.RESOURCES_GET)
-                        .build()
-        );
-    }
 }

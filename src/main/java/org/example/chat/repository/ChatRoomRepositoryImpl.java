@@ -23,4 +23,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user){return chatRoomJpaRepository.findByChatParticipantsUser(user);}
+
+    @Override
+    public Optional<ChatRoomEntity> findByProduct(ProductEntity product){return chatRoomJpaRepository.findByProduct(product);}
 }
