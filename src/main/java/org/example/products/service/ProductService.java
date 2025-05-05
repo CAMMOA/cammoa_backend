@@ -72,9 +72,27 @@ public class ProductService {
                 .currentParticipants(1)  // 생성 시 본인 자동 참여
                 .build();
 
-        ProductEntity saved = productRepository.save(product);
+        ProductEntity savedProduct = productRepository.save(product);
 
-        return toProductResponse(saved);
+        //채팅방 생성
+        ChatRoomEntity chatRoom = ChatRoomEntity.builder()
+                .chatRoomName(request.getTitle() + " 채팅방")
+                .product(product)
+                .build();
+        ChatRoomEntity savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        //채팅참여자로 개설자 추가
+        ChatParticipantEntity chatParticipant = ChatParticipantEntity.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipantRepository.save(chatParticipant);
+
+        ProductResponse response = toProductResponse(savedProduct);
+        response.setChatRoomId(savedChatRoom.getChatRoomId());
+        response.setChatRoomName(savedChatRoom.getChatRoomName());
+
+        return response;
     }
 
     public List<ProductResponse> getAllProducts() {
