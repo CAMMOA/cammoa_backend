@@ -2,7 +2,6 @@ package org.example.products.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
-import org.example.exception.CustomException;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ResourceException;
 import org.example.products.constant.SortTypeEnum;
@@ -12,6 +11,7 @@ import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.ParticipationRepository;
+import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
@@ -21,7 +21,6 @@ import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
