@@ -22,21 +22,26 @@ public enum ErrorResponseEnum implements Response {
     //사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found"),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
-    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글에 대한 권한이 없습니다."),
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "You do not have permission to access this post"),
     PASSWORDS_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "Passwords Do Not Match"),
 
     //게시글
-    INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 올바른 타입을 입력해주세요."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
-    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "마감일은 현재 시각보다 이후여야 합니다."),
-    INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "최대 인원은 현재 참여 인원보다 커야 합니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not found"),
+    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "Deadline must be after the current time"),
+    INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Max participants must be greater than current participants"),
 
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email"),
 
     //채팅방
-    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found");
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found"),
+
+    //공동구매 참여
+    ALREADY_JOINED(HttpStatus.BAD_REQUEST, "You have already joined this group buying."),
+    POST_CLOSED(HttpStatus.BAD_REQUEST, "This group buying is already closed."),
+    POST_FULL(HttpStatus.BAD_REQUEST, "This group buying has reached the maximum number of participants.");
+
     private final HttpStatus httpStatus;
     private final String message;
 }

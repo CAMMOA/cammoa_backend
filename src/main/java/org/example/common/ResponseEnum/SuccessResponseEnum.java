@@ -15,14 +15,12 @@ public enum SuccessResponseEnum implements Response {
 
     EMAIL_SEND_SUCCESS(HttpStatus.OK, "Email Successfully Sent"),
     EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
-
     REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully"),
-
     RESOURCES_GET(HttpStatus.OK, "Resourses Is Got Successfully"),
-    POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully");
-
-
-
+    //게시글
+    POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully"),
+    //공동구매 참여
+    JOIN_SUCCESS(HttpStatus.OK, "You have successfully joined the group buying.");
     private final HttpStatus httpStatus;
     private final String message;
 }
