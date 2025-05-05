@@ -23,7 +23,6 @@ import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
-import org.hibernate.mapping.Join;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +31,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.example.common.ResponseEnum.ErrorResponseEnum.CHATROOM_NOT_FOUND;
-import static org.example.common.ResponseEnum.ErrorResponseEnum.DUPLICATED_USERNAME;
 
 @Service
 @RequiredArgsConstructor
