@@ -97,32 +97,4 @@ public class ChatServiceimpl implements ChatService {
         return new CreateChatRoomResponse(chatRoom.getChatRoomId(), chatRoom.getChatRoomName());
     }
 
-    public void joinChatRoom(Long roomId) {
-        //채팅방 조회
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatException(CHATROOM_NOT_FOUND));
-
-        //유저 조회
-        //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
-
-        //참여자인지 확인
-        Optional<ChatParticipantEntity> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
-        if(participant.isPresent()){
-            throw new ChatException(DUPLICATED_USERNAME);
-        }
-
-        addParticipantToRoom(chatRoom, user);
-
-    }
-
-    //ChatParticipant객체 생성 후 저장
-    public void addParticipantToRoom(ChatRoomEntity chatRoom, UserEntity user) {
-        ChatParticipantEntity chatParticipant = ChatParticipantEntity.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .build();
-        chatParticipantRepository.save(chatParticipant);
-    }
 }
