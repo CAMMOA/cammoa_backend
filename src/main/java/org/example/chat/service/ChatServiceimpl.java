@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.example.common.ResponseEnum.ErrorResponseEnum.CHATROOM_NOT_FOUND;
-import static org.example.common.ResponseEnum.ErrorResponseEnum.POST_NOT_FOUND;
+import static org.example.common.ResponseEnum.ErrorResponseEnum.*;
 
 @Service
 @Transactional
@@ -128,9 +127,11 @@ public class ChatServiceimpl implements ChatService {
 
         //참여자인지 확인
         Optional<ChatParticipantEntity> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
-        if(!participant.isPresent()){
-            addParticipantToRoom(chatRoom, user);
+        if(participant.isPresent()){
+            throw new ChatException(DUPLICATED_USERNAME);
         }
+
+        addParticipantToRoom(chatRoom, user);
 
         //전체 참여자 이름 리스트 반환
         List<ChatParticipantEntity> participants = chatParticipantRepository.findByChatRoom(chatRoom);
