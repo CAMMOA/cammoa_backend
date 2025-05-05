@@ -2,6 +2,7 @@ package org.example.chat.repository;
 
 import lombok.AllArgsConstructor;
 import org.example.chat.repository.entity.ChatRoomEntity;
+import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +23,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user){return chatRoomJpaRepository.findByChatParticipantsUser(user);}
+
+    @Override
+    public Optional<ChatRoomEntity> findByProduct(ProductEntity product){return chatRoomJpaRepository.findByProduct(product);}
 }

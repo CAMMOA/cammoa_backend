@@ -1,6 +1,7 @@
 package org.example.chat.repository;
 
 import org.example.chat.repository.entity.ChatRoomEntity;
+import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
     ChatRoomEntity save(ChatRoomEntity chatRoom);
     Optional<ChatRoomEntity> findById(Long roomId);
     List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user);
+    Optional<ChatRoomEntity> findByProduct(ProductEntity product);
 }

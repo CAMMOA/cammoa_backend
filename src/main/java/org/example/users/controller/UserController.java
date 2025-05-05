@@ -143,6 +143,7 @@ public class UserController {
     @GetMapping("/users/chats")
     public ResponseEntity<?> getChatRooms() {
         List<GetChatRoomsResponse> chatRooms = userService.getChatRooms();
+
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<GetChatRoomsResponse>>builder()
                         .data(chatRooms)

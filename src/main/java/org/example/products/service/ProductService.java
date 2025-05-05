@@ -1,29 +1,40 @@
 package org.example.products.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.chat.dto.response.JoinChatRoomResponse;
+import org.example.chat.repository.ChatParticipantRepository;
+import org.example.chat.repository.ChatRoomRepository;
+import org.example.chat.repository.entity.ChatParticipantEntity;
+import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.exception.CustomException;
 import org.example.exception.impl.AuthException;
+import org.example.exception.impl.ChatException;
 import org.example.exception.impl.ResourceException;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductResponse;
-import org.example.products.repository.ProductRepository;
 import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
-import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.hibernate.mapping.Join;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.example.common.ResponseEnum.ErrorResponseEnum.CHATROOM_NOT_FOUND;
+import static org.example.common.ResponseEnum.ErrorResponseEnum.DUPLICATED_USERNAME;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +43,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -245,6 +258,41 @@ public class ProductService {
         product.setCurrentParticipants(product.getCurrentParticipants() + 1);
     }
 
+    public JoinChatRoomResponse joinChatRoom(Long postId) {
+        //게시글로 채팅방 조회
+        ProductEntity product = productRepository.findById(postId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        ChatRoomEntity chatRoom = chatRoomRepository.findByProduct(product)
+                .orElseThrow(()-> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+
+        //유저 조회
+        //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        //참여자인지 확인
+        Optional<ChatParticipantEntity> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
+        if(participant.isPresent()){
+            throw new ChatException(ErrorResponseEnum.DUPLICATED_PARTICIPANT);
+        }
+
+        addParticipantToRoom(chatRoom, user);
+
+        return JoinChatRoomResponse.builder()
+                .roomId(chatRoom.getChatRoomId())
+                .roomName(chatRoom.getChatRoomName())
+                .build();
+    }
+
+    //ChatParticipant 객체 생성 후 저장
+    public void addParticipantToRoom(ChatRoomEntity chatRoom, UserEntity user) {
+        ChatParticipantEntity chatParticipant = ChatParticipantEntity.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipantRepository.save(chatParticipant);
+    }
 
 }
 

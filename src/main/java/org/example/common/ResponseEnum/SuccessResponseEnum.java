@@ -22,7 +22,9 @@ public enum SuccessResponseEnum implements Response {
     //게시글
     POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully"),
     //공동구매 참여
-    JOIN_SUCCESS(HttpStatus.OK, "You have successfully joined the group buying.");
+    JOIN_SUCCESS(HttpStatus.OK, "You have successfully joined the group buying."),
+    CHATROOM_JOIN_SUCCESS(HttpStatus.OK, "Joined The Chat Room Successfully");
+
     private final HttpStatus httpStatus;
     private final String message;
 }
