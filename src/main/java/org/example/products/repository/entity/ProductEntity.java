@@ -68,4 +68,6 @@ public class ProductEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    private LocalDateTime deletedAt;
+
 }

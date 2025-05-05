@@ -131,4 +131,19 @@ public class ProductController {
         );
     }
 
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable Long postId,
+                                        @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtTokenProvider.getUserId(token);
+        productService.deleteProduct(postId, userId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.POST_DELETE_SUCCESS)
+                        .build()
+        );
+    }
+
+
 }

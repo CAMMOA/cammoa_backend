@@ -45,5 +45,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             @Param("sortType") String sortType
     );
     List<ProductEntity> findByUser(UserEntity user);
+
+    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :postId AND p.deletedAt IS NULL")
+    Optional<ProductEntity> findByIdWithUserAndNotDeleted(@Param("postId") Long postId);
+
 }
 

@@ -30,6 +30,18 @@ public class ChatController {
         );
     }
 
+    //채팅 목록 조회
+    @GetMapping("/rooms/list")
+    public ResponseEntity<?> getChatRooms() {
+        List<GetChatRoomsResponse> chatRooms = chatService.getChatRooms();
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<GetChatRoomsResponse>>builder()
+                        .data(chatRooms)
+                        .response(SuccessResponseEnum.RESOURCES_GET)
+                        .build()
+        );
+    }
+
     //채팅방 참여
     @PostMapping("/rooms/{roomId}/join")
     public ResponseEntity<?> joinChatRoom(@PathVariable Long roomId) {
