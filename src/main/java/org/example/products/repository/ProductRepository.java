@@ -1,6 +1,5 @@
 package org.example.products.repository;
 
-import org.example.products.constant.SortTypeEnum;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.entity.UserEntity;

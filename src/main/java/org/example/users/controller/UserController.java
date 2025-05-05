@@ -4,9 +4,10 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.repository.entity.CommonResponseEntity;
+import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
+import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
@@ -134,6 +135,19 @@ public class UserController {
                 CommonResponseEntity.<List<ProductSimpleResponse>>builder()
                         .data(response)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
+    //사용자 채팅방 목록 조회
+    @GetMapping("/users/chats")
+    public ResponseEntity<?> getChatRooms() {
+        List<GetChatRoomsResponse> chatRooms = userService.getChatRooms();
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<GetChatRoomsResponse>>builder()
+                        .data(chatRooms)
+                        .response(SuccessResponseEnum.RESOURCES_GET)
                         .build()
         );
     }
