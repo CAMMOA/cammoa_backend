@@ -1,6 +1,7 @@
 package org.example.users.service;
 
 import jakarta.mail.MessagingException;
+import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
 import org.example.products.dto.response.ProductSimpleResponse;
@@ -22,4 +23,5 @@ public interface UserService {
     void deleteUser(Long userId, String password);
     ProfileResponse getProfile(String authorizationHeader);
     List<ProductSimpleResponse> getMyGroupBuyings(Long userId);
+    List<GetChatRoomsResponse> getChatRooms();
 }

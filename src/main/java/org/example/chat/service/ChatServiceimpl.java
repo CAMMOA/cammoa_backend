@@ -1,10 +1,12 @@
 package org.example.chat.service;
 
 import lombok.AllArgsConstructor;
-import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.dto.request.ChatMessageRequest;
-import org.example.chat.dto.response.GetChatRoomsResponse;
-import org.example.chat.repository.*;
+import org.example.chat.dto.response.CreateChatRoomResponse;
+import org.example.chat.repository.ChatMessageRepository;
+import org.example.chat.repository.ChatParticipantRepository;
+import org.example.chat.repository.ChatRoomRepository;
+import org.example.chat.repository.ReadStatusRepository;
 import org.example.chat.repository.entity.ChatMessageEntity;
 import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
@@ -21,10 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.example.common.ResponseEnum.ErrorResponseEnum.*;
 
@@ -97,25 +97,7 @@ public class ChatServiceimpl implements ChatService {
         return new CreateChatRoomResponse(chatRoom.getChatRoomId(), chatRoom.getChatRoomName());
     }
 
-    public List<GetChatRoomsResponse> getChatRooms(){
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
-
-        List<ChatRoomEntity> chatRooms = chatRoomRepository.findByChatParticipantsUser(user);
-
-        List<GetChatRoomsResponse> getChatRooms = new ArrayList<>();
-        for(ChatRoomEntity c: chatRooms) {
-            GetChatRoomsResponse getChatRoom = GetChatRoomsResponse
-                    .builder()
-                    .roomId(c.getChatRoomId())
-                    .roomName(c.getChatRoomName())
-                    .build();
-            getChatRooms.add(getChatRoom);
-        }
-        return getChatRooms;
-    }
-
-    public List<String> joinChatRoom(Long roomId) {
+    public void joinChatRoom(Long roomId) {
         //채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(()-> new ChatException(CHATROOM_NOT_FOUND));
@@ -133,13 +115,6 @@ public class ChatServiceimpl implements ChatService {
 
         addParticipantToRoom(chatRoom, user);
 
-        //전체 참여자 이름 리스트 반환
-        List<ChatParticipantEntity> participants = chatParticipantRepository.findByChatRoom(chatRoom);
-        List<String> participantNicknames = participants.stream()
-                .map(p -> p.getUser().getNickname())
-                .collect(Collectors.toList());
-
-        return participantNicknames;
     }
 
     //ChatParticipant객체 생성 후 저장

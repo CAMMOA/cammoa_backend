@@ -4,6 +4,9 @@ import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.chat.dto.response.GetChatRoomsResponse;
+import org.example.chat.repository.ChatRoomRepository;
+import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
@@ -25,6 +28,7 @@ import org.example.users.repository.entity.UserEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -46,6 +50,7 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Override
     @Transactional
@@ -212,5 +217,22 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    //채팅 목록 조회
+    public List<GetChatRoomsResponse> getChatRooms(){
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
+        List<ChatRoomEntity> chatRooms = chatRoomRepository.findByChatParticipantsUser(user);
+
+        List<GetChatRoomsResponse> getChatRooms = new ArrayList<>();
+        for(ChatRoomEntity c: chatRooms) {
+            GetChatRoomsResponse getChatRoom = GetChatRoomsResponse
+                    .builder()
+                    .roomId(c.getChatRoomId())
+                    .roomName(c.getChatRoomName())
+                    .build();
+            getChatRooms.add(getChatRoom);
+        }
+        return getChatRooms;
+    }
 }
