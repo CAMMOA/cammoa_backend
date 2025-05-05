@@ -1,7 +1,6 @@
 package org.example.chat.service;
 
 import lombok.AllArgsConstructor;
-import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.dto.request.ChatMessageRequest;
 import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.repository.ChatMessageRepository;
@@ -25,9 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.example.common.ResponseEnum.ErrorResponseEnum.*;
+import static org.example.common.ResponseEnum.ErrorResponseEnum.POST_NOT_FOUND;
 
 @Service
 @Transactional

@@ -18,7 +18,6 @@ public enum SuccessResponseEnum implements Response {
 
     EMAIL_SEND_SUCCESS(HttpStatus.OK, "Email Successfully Sent"),
     EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "Email Verification Successed"),
-    REQUEST_SUCCESS(HttpStatus.OK, "Request Processed Successfully"),
 
     //게시글
     POST_DELETE_SUCCESS(HttpStatus.OK, "Post Deleted Successfully"),
