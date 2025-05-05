@@ -1,6 +1,5 @@
 package org.example.chat.repository;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.users.repository.entity.UserEntity;

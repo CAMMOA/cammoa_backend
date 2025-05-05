@@ -35,7 +35,7 @@ public class ChatController {
     public ResponseEntity<?> getChatRooms() {
         List<GetChatRoomsResponse> chatRooms = chatService.getChatRooms();
         return ResponseEntity.ok(
-                CommonResponseEntity.<GetChatRoomsResponse>builder()
+                CommonResponseEntity.<List<GetChatRoomsResponse>>builder()
                         .data(chatRooms)
                         .response(SuccessResponseEnum.RESOURCES_CREATED)
                         .build()
