@@ -26,6 +26,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final JwtTokenProvider jwtTokenProvider;
+    //게시글 생성
     @PostMapping
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
@@ -39,7 +40,7 @@ public class ProductController {
                         .response(SuccessResponseEnum.RESOURCES_CREATED)
                         .build());
     }
-
+    //게시글 목록 조회
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
         List<ProductResponse> responseList = productService.getAllProducts();
@@ -83,7 +84,7 @@ public class ProductController {
                         .build()
         );
     }
-
+    //게시글 상세페이지 조회
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostDetail(@PathVariable("postId") Long postId) {
         ProductDetailResponse response = productService.getProductDetail(postId);
@@ -94,7 +95,7 @@ public class ProductController {
                         .build()
         );
     }
-
+    //게시글 검색
     @GetMapping("/search")
     public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword, @RequestParam(value = "category", required = false) String category, @RequestParam(value = "sortTypeEnum", defaultValue = "DEADLINE") SortTypeEnum sortTypeEnum) {
 
@@ -116,7 +117,7 @@ public class ProductController {
                         .build()
         );
     }
-
+    //게시글 수정
     @PatchMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable Long postId,
                                         @RequestBody @Valid ProductUpdateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
@@ -131,7 +132,7 @@ public class ProductController {
                         .build()
         );
     }
-
+    //게시글 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId,
                                         @RequestHeader("Authorization") String authorizationHeader) {

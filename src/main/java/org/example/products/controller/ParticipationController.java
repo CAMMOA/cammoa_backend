@@ -23,6 +23,7 @@ public class ParticipationController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ParticipationService participationService;
 
+    //공동구매 참여
     @PostMapping("/join")
     public ResponseEntity<?> joinGroupBuying(@RequestBody @Valid GroupBuyingJoinRequest request,
                                              @RequestHeader("Authorization") String authorizationHeader) {
@@ -38,6 +39,7 @@ public class ParticipationController {
         );
     }
 
+    //공동구매 상태 확인(최대 인원 달성 여부)
     @GetMapping("/{group_buy_id}/status")
     public ResponseEntity<?> checkParticipationStatus(@PathVariable("group_buy_id") Long postId,
                                                       @RequestHeader("Authorization") String authorizationHeader) {
@@ -51,10 +53,25 @@ public class ParticipationController {
 
         return ResponseEntity.ok(
                 CommonResponseEntity.<Map<String, Object>>builder()
-                        .response(SuccessResponseEnum.JOIN_SUCCESS) // 또는 별도의 응답 메시지 enum 추가
+                        .response(SuccessResponseEnum.JOIN_SUCCESS)
                         .data(response)
                         .build()
         );
 
     }
+
+    // 공동구매 참여 취소
+    @DeleteMapping("/{group_buy_id}/participants/{user_id}")
+    public ResponseEntity<?> cancelParticipation(@PathVariable("group_buy_id") Long postId,
+                                                 @PathVariable("user_id") Long userId) {
+
+        participationService.cancelParticipation(postId, userId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.CANCEL_SUCCESS)
+                        .build()
+        );
+    }
+
 }
