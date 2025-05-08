@@ -24,8 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.example.common.ResponseEnum.ErrorResponseEnum.POST_NOT_FOUND;
+import static org.example.common.ResponseEnum.ErrorResponseEnum.*;
 
 @Service
 @Transactional
@@ -57,7 +58,7 @@ public class ChatServiceimpl implements ChatService {
 
         //사용자별 읽음여부 저장
         List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-        for(ChatParticipantEntity c : chatParticipants) {
+        for (ChatParticipantEntity c : chatParticipants) {
             ReadStatusEntity readStatus = ReadStatusEntity.builder()
                     .chatRoom(chatRoom)
                     .user(c.getUser())
@@ -67,33 +68,4 @@ public class ChatServiceimpl implements ChatService {
             readStatusRepository.save(readStatus);
         }
     }
-
-    public CreateChatRoomResponse createChatRoom(Long productId, String chatRoomName) {
-        //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
-        String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(principal);
-        UserEntity user = userRepository.findByUsername(principal)
-                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
-
-        //상품 조회
-        ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(()-> new ResourceException(POST_NOT_FOUND));
-
-        //채팅방 생성
-        ChatRoomEntity chatRoom = ChatRoomEntity.builder()
-                .chatRoomName(chatRoomName)
-                .product(product)
-                .build();
-        chatRoomRepository.save(chatRoom);
-
-        //채팅참여자로 개설자 추가
-        ChatParticipantEntity chatParticipant = ChatParticipantEntity.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .build();
-        chatParticipantRepository.save(chatParticipant);
-
-        return new CreateChatRoomResponse(chatRoom.getChatRoomId(), chatRoom.getChatRoomName());
-    }
-
 }
