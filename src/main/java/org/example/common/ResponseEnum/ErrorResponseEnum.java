@@ -29,7 +29,7 @@ public enum ErrorResponseEnum implements Response {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not found"),
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "Deadline must be after the current time"),
     INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Max participants must be greater than current participants"),
-
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid category"),
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email"),
