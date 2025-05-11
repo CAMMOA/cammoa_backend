@@ -5,6 +5,7 @@ import org.example.security.JwtTokenProvider;
 import org.example.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,7 +31,9 @@ public class SecurityConfig {
                 //JWT를 사용하기 때문에 세션 사용 X
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(a -> a.requestMatchers("/api/auth/signup", "/api/auth/login", "/connect").permitAll()
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/api/auth/signup", "/api/auth/login", "/connect").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() //게시글 목록 조회, 상세페이지, 검색 기능 로그인 없이 접근 가능하도록 수정
                         .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

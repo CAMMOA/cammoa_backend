@@ -3,12 +3,14 @@ package org.example.products.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.JoinChatRoomResponse;
+import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
+import org.example.products.dto.response.ProductListResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.service.ProductService;
@@ -42,10 +44,23 @@ public class ProductController {
     }
     //게시글 목록 조회
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
-        List<ProductResponse> responseList = productService.getAllProducts();
+    public ResponseEntity<?> getAllProducts(@RequestParam(value = "category", required = false) String categoryStr) {
+        CategoryEnum category = null;
+        if (categoryStr != null && !categoryStr.isBlank()) {
+            try {
+                category = CategoryEnum.from(categoryStr);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(
+                        CommonResponseEntity.builder()
+                                .response(ErrorResponseEnum.INVALID_REQUEST)
+                                .build()
+                );
+            }
+        }
+        List<ProductListResponse> responseList = productService.getAllProductsByCategory(category);
+
         return ResponseEntity.ok(
-                CommonResponseEntity.<List<ProductResponse>>builder()
+                CommonResponseEntity.<List<ProductListResponse>>builder()
                         .data(responseList)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
@@ -54,9 +69,9 @@ public class ProductController {
 
     @GetMapping("/recommend")
     public ResponseEntity<?> getRecommendedProducts() {
-        List<ProductResponse> products = productService.getRecommendedProducts();
+        List<ProductListResponse> products = productService.getRecommendedProducts();
         return ResponseEntity.ok(
-                CommonResponseEntity.<List<ProductResponse>>builder()
+                CommonResponseEntity.<List<ProductListResponse>>builder()
                         .data(products)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
@@ -65,9 +80,9 @@ public class ProductController {
 
     @GetMapping("/closing-soon")
     public ResponseEntity<?> getClosingSoonProducts() {
-        List<ProductResponse> products = productService.getClosingSoonProducts();
+        List<ProductListResponse> products = productService.getClosingSoonProducts();
         return ResponseEntity.ok(
-                CommonResponseEntity.<List<ProductResponse>>builder()
+                CommonResponseEntity.<List<ProductListResponse>>builder()
                         .data(products)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
@@ -76,9 +91,9 @@ public class ProductController {
 
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentlyPostedProducts() {
-        List<ProductResponse> products = productService.getRecentlyPostedProducts();
+        List<ProductListResponse> products = productService.getRecentlyPostedProducts();
         return ResponseEntity.ok(
-                CommonResponseEntity.<List<ProductResponse>>builder()
+                CommonResponseEntity.<List<ProductListResponse>>builder()
                         .data(products)
                         .response(SuccessResponseEnum.REQUEST_SUCCESS)
                         .build()
