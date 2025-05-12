@@ -13,6 +13,7 @@ import org.example.email.dto.response.SendEmailResponse;
 import org.example.email.service.EmailService;
 import org.example.exception.impl.ResourceException;
 import org.example.products.dto.response.ProductSimpleResponse;
+import org.example.products.service.ParticipationService;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
@@ -35,6 +36,7 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final ParticipationService participationService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request) {
@@ -130,6 +132,19 @@ public class UserController {
     @GetMapping("/users/{userId}/group-buyings")
     public ResponseEntity<?> getMyGroupBuyings(@PathVariable Long userId) {
         List<ProductSimpleResponse> response = userService.getMyGroupBuyings(userId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.<List<ProductSimpleResponse>>builder()
+                        .data(response)
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
+    @GetMapping("/users/{userId}/participated-group-buyings")
+    public ResponseEntity<?> getParticipatedGroupBuyings(@PathVariable Long userId) {
+
+        List<ProductSimpleResponse> response = participationService.getParticipatedGroupBuyings(userId);
 
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductSimpleResponse>>builder()

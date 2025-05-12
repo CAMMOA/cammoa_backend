@@ -74,4 +74,18 @@ public class ParticipationController {
         );
     }
 
+    // 공동구매 모집 완료 이메일 알림 전송
+    @PostMapping("/{group_buy_id}/notify")
+    public ResponseEntity<?> notifyGroupBuyingCompletion(@PathVariable("group_buy_id") Long postId) {
+
+        productService.notifyGroupBuyingCompletion(postId);
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.EMAIL_NOTIFICATION_SENT)
+                        .build()
+        );
+    }
+
+
 }

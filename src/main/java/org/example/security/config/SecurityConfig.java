@@ -5,6 +5,7 @@ import org.example.security.JwtTokenProvider;
 import org.example.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,9 +35,12 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) //csrf 비활성화
                 .csrf(AbstractHttpConfigurer::disable) // HTTP Basic 비활성화
                 //JWT를 사용하기 때문에 세션 사용 X
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(a -> a.requestMatchers("/api/auth/signup", "/api/auth/login", "/connect/**").permitAll()
-                        .anyRequest().authenticated()) //특정 url패턴은 Authentication 객체 요구 X
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/api/auth/signup", "/api/auth/login", "/connect").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() //게시글 목록 조회, 상세페이지, 검색 기능 로그인 없이 접근 가능하도록 수정
+                        .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
@@ -45,8 +49,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     //연동을 위한 코드

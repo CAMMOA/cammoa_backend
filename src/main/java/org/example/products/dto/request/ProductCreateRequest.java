@@ -6,13 +6,14 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.example.products.repository.entity.CategoryEnum;
 
 @Getter
 public class ProductCreateRequest {
     @NotBlank
     private String title;
-    @NotBlank
-    private String category;
+    @NotNull
+    private CategoryEnum category;
     @NotBlank
     private String description;
     @NotBlank
