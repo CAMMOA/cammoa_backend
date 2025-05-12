@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class GetChatRoomsResponse {
     private Long roomId;
     private String roomName;
+    private Long unreadMessageCount;
 }

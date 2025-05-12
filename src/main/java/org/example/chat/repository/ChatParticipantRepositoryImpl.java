@@ -25,4 +25,9 @@ public class ChatParticipantRepositoryImpl implements ChatParticipantRepository 
     public Optional<ChatParticipantEntity> findByChatRoomAndUser(ChatRoomEntity chatRoom, UserEntity user){
         return chatParticipantJpaRepository.findByChatRoomAndUser(chatRoom, user);
     }
+
+    @Override
+    public List<ChatParticipantEntity> findAllByUser(UserEntity user){
+        return chatParticipantJpaRepository.findAllByUser(user);
+    }
 }
