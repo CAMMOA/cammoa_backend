@@ -13,5 +13,4 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
     Optional<ChatRoomEntity> findById(Long roomId);
     List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user);
     Optional<ChatRoomEntity> findByProduct(ProductEntity product);
-    void delete(ChatRoomEntity chatRoom);
 }

@@ -121,10 +121,5 @@ public class ChatServiceimpl implements ChatService {
 
         ChatParticipantEntity c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.USER_NOT_FOUND));
         chatParticipantRepository.delete(c);
-
-        List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-        if(chatParticipants.isEmpty()){
-            chatRoomRepository.delete(chatRoom);
-        }
     }
 }

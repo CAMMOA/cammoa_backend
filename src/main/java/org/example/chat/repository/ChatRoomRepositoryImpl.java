@@ -26,7 +26,4 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public Optional<ChatRoomEntity> findByProduct(ProductEntity product){return chatRoomJpaRepository.findByProduct(product);}
-
-    @Override
-    public void delete(ChatRoomEntity chatRoom){ chatRoomJpaRepository.delete(chatRoom); }
 }
