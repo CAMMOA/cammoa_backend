@@ -12,5 +12,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationEnti
     boolean existsByUserAndProduct(UserEntity user, ProductEntity product);
     Optional<ParticipationEntity> findByUserAndProduct(UserEntity user, ProductEntity product);
     List<ParticipationEntity> findAllByUser(UserEntity user);
+    List<ParticipationEntity> findAllByProduct(ProductEntity product);
 
 }
