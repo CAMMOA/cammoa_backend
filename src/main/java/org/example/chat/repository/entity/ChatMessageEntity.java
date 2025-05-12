@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.common.repository.entity.BaseTimeEntity;
 import org.example.users.repository.entity.UserEntity;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChatMessageEntity {
+public class ChatMessageEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
