@@ -11,7 +11,6 @@ import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
-import org.example.users.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

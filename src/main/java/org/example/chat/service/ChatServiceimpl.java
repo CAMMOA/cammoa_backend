@@ -110,4 +110,16 @@ public class ChatServiceimpl implements ChatService {
         }
         return false;
     }
+
+    public void leaveChatRoom(Long roomId) {
+        //채팅방 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        ChatParticipantEntity c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.USER_NOT_FOUND));
+        chatParticipantRepository.delete(c);
+    }
 }

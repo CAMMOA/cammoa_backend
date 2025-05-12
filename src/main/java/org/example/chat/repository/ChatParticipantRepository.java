@@ -11,4 +11,6 @@ public interface ChatParticipantRepository {
     ChatParticipantEntity save(ChatParticipantEntity chatParticipant);
     List<ChatParticipantEntity> findByChatRoom(ChatRoomEntity chatRoom);
     Optional<ChatParticipantEntity> findByChatRoomAndUser(ChatRoomEntity chatRoom, UserEntity user);
+    List<ChatParticipantEntity> findAllByUser(UserEntity user);
+    void delete(ChatParticipantEntity chatParticipant);
 }

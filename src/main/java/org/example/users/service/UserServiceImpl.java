@@ -5,8 +5,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.GetChatRoomsResponse;
-import org.example.chat.repository.ChatRoomRepository;
-import org.example.chat.repository.entity.ChatRoomEntity;
+import org.example.chat.repository.ChatParticipantRepository;
+import org.example.chat.repository.ReadStatusRepository;
+import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
@@ -50,7 +51,8 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
+    private final ReadStatusRepository readStatusRepository;
 
     @Override
     @Transactional
@@ -222,14 +224,15 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        List<ChatRoomEntity> chatRooms = chatRoomRepository.findByChatParticipantsUser(user);
-
+        List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findAllByUser(user);
         List<GetChatRoomsResponse> getChatRooms = new ArrayList<>();
-        for(ChatRoomEntity c: chatRooms) {
-            GetChatRoomsResponse getChatRoom = GetChatRoomsResponse
-                    .builder()
-                    .roomId(c.getChatRoomId())
-                    .roomName(c.getChatRoomName())
+
+        for(ChatParticipantEntity c: chatParticipants) {
+            Long count = readStatusRepository.countByChatRoomAndUserAndIsReadFalse(c.getChatRoom(), user);
+            GetChatRoomsResponse getChatRoom = GetChatRoomsResponse.builder()
+                    .roomId(c.getChatRoom().getChatRoomId())
+                    .roomName(c.getChatRoom().getChatRoomName())
+                    .unreadMessageCount(count)
                     .build();
             getChatRooms.add(getChatRoom);
         }

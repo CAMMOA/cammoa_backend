@@ -2,7 +2,6 @@ package org.example.email.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.example.email.dto.response.SendEmailResponse;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.entity.UserEntity;
 

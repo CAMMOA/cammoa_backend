@@ -8,4 +8,5 @@ public interface ChatService {
     void saveMessage(Long roomId, ChatMessageDto request);
     List<ChatMessageDto> getChatHistory(Long roomId);
     boolean isRoomParticipant(String email, Long roomId);
+    void leaveChatRoom(Long roomId);
 }
