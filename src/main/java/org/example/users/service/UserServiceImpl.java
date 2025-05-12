@@ -6,10 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.chat.repository.ChatParticipantRepository;
-import org.example.chat.repository.ChatRoomRepository;
 import org.example.chat.repository.ReadStatusRepository;
 import org.example.chat.repository.entity.ChatParticipantEntity;
-import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
@@ -53,7 +51,6 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
-    private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ReadStatusRepository readStatusRepository;
 

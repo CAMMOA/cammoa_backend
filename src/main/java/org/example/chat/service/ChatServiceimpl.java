@@ -2,7 +2,6 @@ package org.example.chat.service;
 
 import lombok.AllArgsConstructor;
 import org.example.chat.dto.request.ChatMessageRequest;
-import org.example.chat.dto.response.CreateChatRoomResponse;
 import org.example.chat.repository.ChatMessageRepository;
 import org.example.chat.repository.ChatParticipantRepository;
 import org.example.chat.repository.ChatRoomRepository;
@@ -14,19 +13,13 @@ import org.example.chat.repository.entity.ReadStatusEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
-import org.example.exception.impl.ResourceException;
 import org.example.products.repository.ProductRepository;
-import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
-import static org.example.common.ResponseEnum.ErrorResponseEnum.*;
 
 @Service
 @Transactional
