@@ -7,6 +7,7 @@ import org.example.chat.repository.ChatRoomRepository;
 import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.email.service.EmailService;
 import org.example.exception.CustomException;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
@@ -42,6 +43,7 @@ public class ProductService {
     private final ParticipationRepository participationRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final EmailService emailService;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -281,6 +283,15 @@ public class ProductService {
 
         // 현재 인원 수 증가
         product.setCurrentParticipants(product.getCurrentParticipants() + 1);
+
+        if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+            List<UserEntity> participants = participationRepository.findAllByProduct(product)
+                    .stream()
+                    .map(ParticipationEntity::getUser)
+                    .collect(Collectors.toList());
+
+            emailService.sendCompletionNotification(product, participants);
+        }
     }
 
     public JoinChatRoomResponse joinChatRoom(Long postId) {
@@ -318,6 +329,23 @@ public class ProductService {
                 .build();
         chatParticipantRepository.save(chatParticipant);
     }
+    //모집 인원 완료시 알림 전송
+    public void notifyGroupBuyingCompletion(Long postId) {
+        ProductEntity product = productRepository.findById(postId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        if (product.getCurrentParticipants() < product.getMaxParticipants()) {
+            throw new CustomException(ErrorResponseEnum.POST_NOT_COMPLETED);
+        }
+
+        List<UserEntity> participants = participationRepository.findAllByProduct(product)
+                .stream()
+                .map(ParticipationEntity::getUser)
+                .collect(Collectors.toList());
+
+        emailService.sendCompletionNotification(product, participants);
+    }
+
 
 }
 
