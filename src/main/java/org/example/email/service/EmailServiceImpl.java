@@ -4,15 +4,17 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
-import org.example.email.dto.response.SendEmailResponse;
 import org.example.exception.impl.AuthException;
+import org.example.products.repository.entity.ProductEntity;
 import org.example.redis.RedisUtil;
+import org.example.users.repository.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -76,4 +78,26 @@ public class EmailServiceImpl implements EmailService{
             throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
         }
     }
+
+    @Override
+    public void sendCompletionNotification(ProductEntity product, List<UserEntity> participants) {
+        for (UserEntity user : participants) {
+            try {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                message.setFrom(senderEmail);
+                message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+                message.setSubject("[모집 완료] '" + product.getTitle() + "' 공동구매 모집이 완료되었습니다!");
+
+                String body = "<h3>참여하신 공동구매가 모집 완료되었습니다.</h3>"
+                        + "<p>상품명: <strong>" + product.getTitle() + "</strong></p>"
+                        + "<p>마감일: " + product.getDeadline() + "</p>";
+
+                message.setText(body, "UTF-8", "html");
+                javaMailSender.send(message);
+            } catch (MessagingException e) {
+                System.err.println("이메일 전송 실패: " + user.getEmail());
+            }
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import org.example.chat.repository.ChatRoomRepository;
 import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.email.service.EmailService;
 import org.example.exception.CustomException;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
@@ -15,6 +16,7 @@ import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
+import org.example.products.dto.response.ProductListResponse;
 import org.example.products.dto.response.ProductResponse;
 import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.ProductRepository;
@@ -41,6 +43,7 @@ public class ProductService {
     private final ParticipationRepository participationRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final EmailService emailService;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -60,7 +63,7 @@ public class ProductService {
         ProductEntity product = ProductEntity.builder()
                 .user(user)
                 .title(request.getTitle())
-                .category(CategoryEnum.valueOf(request.getCategory()))
+                .category(request.getCategory())
                 .description(request.getDescription())
                 .image(request.getImage())
                 .price(request.getPrice())
@@ -95,34 +98,44 @@ public class ProductService {
         return response;
     }
 
-    public List<ProductResponse> getAllProducts() {
-        List<ProductEntity> products = productRepository.findAll();
+    //게시글 목록 조회
+    public List<ProductListResponse> getAllProductsByCategory(CategoryEnum category) {
+        List<ProductEntity> products;
+
+        if (category != null) {
+            products = productRepository.findByCategory(category);
+        } else {
+            products = productRepository.findAll();
+        }
+
         return products.stream()
-                .map(this::toProductResponse)
+                .map(product -> ProductListResponse.builder()
+                        .id(product.getProductId())
+                        .title(product.getTitle())
+                        .price(product.getPrice())
+                        .imageUrl(product.getImage())
+                        .build())
                 .collect(Collectors.toList());
     }
 
     // 오늘의 공동구매 추천 (랜덤덤 8개)
-    public List<ProductResponse> getRecommendedProducts() {
-        List<ProductEntity> products = productRepository.findRandomRecommendedProducts();
-        return products.stream()
-                .map(this::toProductResponse)
+    public List<ProductListResponse> getRecommendedProducts() {
+        return productRepository.findRandomRecommendedProducts().stream()
+                .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
     // 곧 마감되는 공구 (마감일 빠른 순 8개)
-    public List<ProductResponse> getClosingSoonProducts() {
-        List<ProductEntity> products = productRepository.findClosingSoonProducts();
-        return products.stream()
-                .map(this::toProductResponse)
+    public List<ProductListResponse> getClosingSoonProducts() {
+        return productRepository.findClosingSoonProducts().stream()
+                .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
     // 방금 올라온 공구 (생성일 최신순 8개)
-    public List<ProductResponse> getRecentlyPostedProducts() {
-        List<ProductEntity> products = productRepository.findRecentProducts(LocalDateTime.now().minusHours(24));
-        return products.stream()
-                .map(this::toProductResponse)
+    public List<ProductListResponse> getRecentlyPostedProducts() {
+        return productRepository.findRecentProducts(LocalDateTime.now().minusHours(24)).stream()
+                .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -195,7 +208,7 @@ public class ProductService {
             sortTypeEnum = SortTypeEnum.DEADLINE;
         }
 
-        String categoryEnum =  (category != null) ? category.name() : null;
+        String categoryEnum = (category != null) ? category.name() : null;
         List<ProductEntity> products = productRepository.searchProductsByKeywordAndCategory(
                 keyword,
                 category,
@@ -270,6 +283,15 @@ public class ProductService {
 
         // 현재 인원 수 증가
         product.setCurrentParticipants(product.getCurrentParticipants() + 1);
+
+        if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+            List<UserEntity> participants = participationRepository.findAllByProduct(product)
+                    .stream()
+                    .map(ParticipationEntity::getUser)
+                    .collect(Collectors.toList());
+
+            emailService.sendCompletionNotification(product, participants);
+        }
     }
 
     public JoinChatRoomResponse joinChatRoom(Long postId) {
@@ -278,7 +300,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         ChatRoomEntity chatRoom = chatRoomRepository.findByProduct(product)
-                .orElseThrow(()-> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
         //유저 조회
         //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
@@ -287,7 +309,7 @@ public class ProductService {
 
         //참여자인지 확인
         Optional<ChatParticipantEntity> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
-        if(participant.isPresent()){
+        if (participant.isPresent()) {
             throw new ChatException(ErrorResponseEnum.DUPLICATED_PARTICIPANT);
         }
 
@@ -307,6 +329,23 @@ public class ProductService {
                 .build();
         chatParticipantRepository.save(chatParticipant);
     }
+    //모집 인원 완료시 알림 전송
+    public void notifyGroupBuyingCompletion(Long postId) {
+        ProductEntity product = productRepository.findById(postId)
+                .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        if (product.getCurrentParticipants() < product.getMaxParticipants()) {
+            throw new CustomException(ErrorResponseEnum.POST_NOT_COMPLETED);
+        }
+
+        List<UserEntity> participants = participationRepository.findAllByProduct(product)
+                .stream()
+                .map(ParticipationEntity::getUser)
+                .collect(Collectors.toList());
+
+        emailService.sendCompletionNotification(product, participants);
+    }
+
 
 }
 

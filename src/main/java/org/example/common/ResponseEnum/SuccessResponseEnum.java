@@ -26,6 +26,9 @@ public enum SuccessResponseEnum implements Response {
     CHATROOM_JOIN_SUCCESS(HttpStatus.OK, "Joined The Chat Room Successfully"),
     CANCEL_SUCCESS(HttpStatus.OK, "Successfully canceled group buying participation."),
 
+    //알림 전송
+    EMAIL_NOTIFICATION_SENT(HttpStatus.OK, "Completion email notification has been sent."),
+
     //채팅방
     PARTICIPANT_LEAVED(HttpStatus.OK, "Participant Leaved Successfully");
     private final HttpStatus httpStatus;

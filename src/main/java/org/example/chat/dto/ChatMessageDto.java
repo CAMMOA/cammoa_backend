@@ -1,13 +1,15 @@
-package org.example.chat.dto.request;
+package org.example.chat.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageRequest {
+public class ChatMessageDto {
 
     private String message;
     private String senderNickname;

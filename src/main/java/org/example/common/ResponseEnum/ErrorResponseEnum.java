@@ -29,7 +29,7 @@ public enum ErrorResponseEnum implements Response {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not found"),
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "Deadline must be after the current time"),
     INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Max participants must be greater than current participants"),
-
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid category"),
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email"),
@@ -37,13 +37,16 @@ public enum ErrorResponseEnum implements Response {
 
     //채팅방
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found"),
+    PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "Particiant Not Found"),
 
     //공동구매 참여
     ALREADY_JOINED(HttpStatus.BAD_REQUEST, "You have already joined this group buying."),
     POST_CLOSED(HttpStatus.BAD_REQUEST, "This group buying is already closed."),
     POST_FULL(HttpStatus.BAD_REQUEST, "This group buying has reached the maximum number of participants."),
-    NOT_JOINED(HttpStatus.BAD_REQUEST, "You have not joined this group buying and cannot cancel participation.");
+    NOT_JOINED(HttpStatus.BAD_REQUEST, "You have not joined this group buying and cannot cancel participation."),
 
+    //알림
+    POST_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Group buying is not yet completed");
     private final HttpStatus httpStatus;
     private final String message;
 }
