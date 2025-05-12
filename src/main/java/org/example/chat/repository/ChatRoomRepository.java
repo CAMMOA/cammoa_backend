@@ -12,4 +12,5 @@ public interface ChatRoomRepository {
     Optional<ChatRoomEntity> findById(Long roomId);
     List<ChatRoomEntity> findByChatParticipantsUser(UserEntity user);
     Optional<ChatRoomEntity> findByProduct(ProductEntity product);
+    void delete(ChatRoomEntity chatRoom);
 }

@@ -30,4 +30,7 @@ public class ChatParticipantRepositoryImpl implements ChatParticipantRepository 
     public List<ChatParticipantEntity> findAllByUser(UserEntity user){
         return chatParticipantJpaRepository.findAllByUser(user);
     }
+
+    @Override
+    public void delete(ChatParticipantEntity chatParticipant){ chatParticipantJpaRepository.delete(chatParticipant);}
 }

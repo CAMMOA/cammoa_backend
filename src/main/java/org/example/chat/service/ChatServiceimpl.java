@@ -16,6 +16,7 @@ import org.example.exception.impl.ChatException;
 import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,23 @@ public class ChatServiceimpl implements ChatService {
                     .isRead(c.getUser().equals(sender))
                     .build();
             readStatusRepository.save(readStatus);
+        }
+    }
+
+    public void leaveChatRoom(Long roomId) {
+        //채팅방 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+
+        ChatParticipantEntity c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.USER_NOT_FOUND));
+        chatParticipantRepository.delete(c);
+
+        List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+        if(chatParticipants.isEmpty()){
+            chatRoomRepository.delete(chatRoom);
         }
     }
 }

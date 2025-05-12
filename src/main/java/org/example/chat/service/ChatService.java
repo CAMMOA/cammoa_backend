@@ -5,4 +5,5 @@ import org.example.chat.dto.response.CreateChatRoomResponse;
 
 public interface ChatService {
     void saveMessage(Long roomId, ChatMessageRequest request);
+    void leaveChatRoom(Long roomId);
 }
