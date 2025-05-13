@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.example.products.repository.entity.ProductEntity;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 public class ProductListResponse {
