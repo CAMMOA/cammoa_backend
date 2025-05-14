@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.products.dto.request.GroupBuyingJoinRequest;
+import org.example.products.dto.response.ChatRoomInfoResponse;
 import org.example.products.service.ParticipationService;
 import org.example.products.service.ProductService;
 import org.example.security.JwtTokenProvider;
@@ -30,11 +31,12 @@ public class ParticipationController {
         String token = authorizationHeader.replace("Bearer ", "");
         Long userId = jwtTokenProvider.getUserId(token);
 
-        productService.joinGroupBuying(request.getPostId(), userId);
+        ChatRoomInfoResponse response = productService.joinGroupBuying(request.getPostId(), userId);
 
         return ResponseEntity.ok(
                 CommonResponseEntity.builder()
                         .response(SuccessResponseEnum.JOIN_SUCCESS)
+                        .data(response)
                         .build()
         );
     }

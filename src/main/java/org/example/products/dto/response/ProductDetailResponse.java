@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -22,4 +23,5 @@ public class ProductDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String username; // 작성자 이름
+    private List<ProductSimpleResponse> relatedPosts;
 }
