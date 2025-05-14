@@ -18,6 +18,7 @@ import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.ProductDetailResponse;
 import org.example.products.dto.response.ProductListResponse;
 import org.example.products.dto.response.ProductResponse;
+import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -163,6 +165,22 @@ public class ProductService {
         ProductEntity product = productRepository.findByIdWithUser(productId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
 
+        // 작성자 본인의 다른 게시글 중 현재 게시글 제외하고 6개 랜덤 추출
+        List<ProductSimpleResponse> relatedPosts = productRepository.findByUser(product.getUser()).stream()
+                .filter(p -> !p.getProductId().equals(product.getProductId()))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+                    Collections.shuffle(list);
+                    return list.stream().limit(6).collect(Collectors.toList());
+                }))
+                .stream()
+                .map(p -> ProductSimpleResponse.builder()
+                        .productId(p.getProductId())
+                        .title(p.getTitle())
+                        .imageUrl(p.getImage())
+                        .currentParticipants(p.getCurrentParticipants())
+                        .maxParticipants(p.getMaxParticipants())
+                        .build())
+                .toList();
 
         return ProductDetailResponse.builder()
                 .productId(product.getProductId())
@@ -179,6 +197,7 @@ public class ProductService {
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .username(product.getUser().getUsername())  // 작성자 이름
+                .relatedPosts(relatedPosts)
                 .build();
     }
 
