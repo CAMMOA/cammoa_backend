@@ -15,10 +15,7 @@ import org.example.exception.impl.ResourceException;
 import org.example.products.constant.SortTypeEnum;
 import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
-import org.example.products.dto.response.ProductDetailResponse;
-import org.example.products.dto.response.ProductListResponse;
-import org.example.products.dto.response.ProductResponse;
-import org.example.products.dto.response.ProductSimpleResponse;
+import org.example.products.dto.response.*;
 import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
@@ -273,7 +270,7 @@ public class ProductService {
     }
 
     @Transactional
-    public JoinChatRoomResponse joinGroupBuying(Long postId, Long userId) {
+    public ChatRoomInfoResponse joinGroupBuying(Long postId, Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
@@ -315,9 +312,9 @@ public class ProductService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByProduct(product)
                 .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
-        return JoinChatRoomResponse.builder()
-                .roomId(chatRoom.getChatRoomId())
-                .roomName(chatRoom.getChatRoomName())
+        return ChatRoomInfoResponse.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .chatRoomName(chatRoom.getChatRoomName())
                 .build();
     }
 
