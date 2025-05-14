@@ -273,7 +273,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void joinGroupBuying(Long postId, Long userId) {
+    public JoinChatRoomResponse joinGroupBuying(Long postId, Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
@@ -311,6 +311,14 @@ public class ProductService {
 
             emailService.sendCompletionNotification(product, participants);
         }
+        //채팅방 정보 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findByProduct(product)
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+
+        return JoinChatRoomResponse.builder()
+                .roomId(chatRoom.getChatRoomId())
+                .roomName(chatRoom.getChatRoomName())
+                .build();
     }
 
     public JoinChatRoomResponse joinChatRoom(Long postId) {
