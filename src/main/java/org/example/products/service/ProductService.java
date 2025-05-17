@@ -328,7 +328,7 @@ public class ProductService {
 
         //유저 조회
         //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         //참여자인지 확인

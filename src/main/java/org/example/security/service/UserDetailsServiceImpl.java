@@ -1,10 +1,9 @@
 package org.example.security.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.common.ResponseEnum.ErrorResponseEnum;
-import org.example.exception.impl.AuthException;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    @Autowired
     private final UserRepository userRepository;
 
     @Override
@@ -36,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .collect(Collectors.toList());
 
         return User.builder()
-                .username(user.getUsername())
+                .username(user.getEmail())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .build();
