@@ -2,7 +2,6 @@ package org.example.users.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.chat.repository.ChatParticipantRepository;
