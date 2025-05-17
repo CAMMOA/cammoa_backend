@@ -1,19 +1,19 @@
 package org.example.products.dto.request;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import org.example.products.repository.entity.CategoryEnum;
 
 @Getter
 public class ProductCreateRequest {
+    @Size(max = 40)
     @NotBlank
     private String title;
     @NotNull
     private CategoryEnum category;
+    @Size(max = 1500)
     @NotBlank
     private String description;
     @NotBlank
