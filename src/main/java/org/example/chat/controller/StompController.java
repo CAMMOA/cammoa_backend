@@ -8,14 +8,12 @@ import org.example.chat.service.ChatService;
 import org.example.chat.service.RedisPubSubService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 @Controller
 @RequiredArgsConstructor
 public class StompController {
 
-    private final SimpMessageSendingOperations messagingTemplate;
     private final ChatService chatService;
     private final RedisPubSubService redisPubSubService;
 
@@ -26,7 +24,6 @@ public class StompController {
         System.out.println(request);
         chatService.saveMessage(roomId, request);
         request.setRoomId(roomId);
-        //messagingTemplate.convertAndSend("/topic/"+roomId, request);
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(request);
 

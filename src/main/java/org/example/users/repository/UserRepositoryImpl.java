@@ -23,14 +23,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findByUsername(String username){ return userJpaRepository.findByUsername(username); }
-
-    @Override
-    public boolean existsByUsername(String username) {
-        return userJpaRepository.existsByUsername(username);
-    }
-
-    @Override
     public  boolean existsByNickname(String nickname){
         return userJpaRepository.existsByNickname(nickname);
     }

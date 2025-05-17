@@ -13,7 +13,6 @@ import org.example.chat.repository.entity.ReadStatusEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
-import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +31,6 @@ public class ChatServiceimpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
 
     public void saveMessage(Long roomId, ChatMessageDto request) {
         //채팅방 조회
@@ -69,7 +67,7 @@ public class ChatServiceimpl implements ChatService {
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(()-> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
@@ -99,7 +97,7 @@ public class ChatServiceimpl implements ChatService {
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(()-> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
@@ -116,7 +114,7 @@ public class ChatServiceimpl implements ChatService {
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         ChatParticipantEntity c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.USER_NOT_FOUND));
