@@ -14,10 +14,14 @@ public enum ErrorResponseEnum implements Response {
     //이메일
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed To Send Email"),
     EMAIL_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, "Email Verification Failed"),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "Email Not Verified"),
 
     //인증코드
     AUTH_CODE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "Authentication Code Cannot Be Found"),
     AUTH_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "Authentication Code Does Not Match"),
+
+    //redis
+    REDIS_STORE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to store authentication code in Redis"),
 
     //사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found"),
@@ -30,8 +34,10 @@ public enum ErrorResponseEnum implements Response {
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "Deadline must be after the current time"),
     INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Max participants must be greater than current participants"),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid category"),
+
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
+    DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "Duplicated nickname"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT , "Duplicated email"),
     DUPLICATED_PARTICIPANT(HttpStatus.CONFLICT , "Duplicated participant"),
 

@@ -2,7 +2,6 @@ package org.example.users.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.GetChatRoomsResponse;
 import org.example.chat.repository.ChatParticipantRepository;
@@ -26,6 +25,7 @@ import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -56,12 +56,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse signup(@Valid @RequestBody UserCreateRequest request) {
+    public UserResponse signup(UserCreateRequest request) {
 
         //유저 중복 확인
         if(userRepository.existsByUsername(request.getUsername())){
             throw new ResourceException(ErrorResponseEnum.DUPLICATED_USERNAME);
         }
+
+        //닉네임 중복 확인
+        if(userRepository.existsByNickname(request.getNickname())){
+            throw new ResourceException(ErrorResponseEnum.DUPLICATED_NICKNAME);
+        }
+
         //이메일 중복 확인
         if(userRepository.existsByEmail(request.getEmail())){
             throw new ResourceException(ErrorResponseEnum.DUPLICATED_EMAIL);
@@ -87,7 +93,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public SendEmailResponse sendAuthcode(String email) throws MessagingException {
+    public SendEmailResponse sendAuthcode(String email) {
         try{
             String authCode = emailService.sendSimpleMessage(email);
 
@@ -100,24 +106,32 @@ public class UserServiceImpl implements UserService {
 
         } catch (MessagingException e) {
             throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new AuthException(ErrorResponseEnum.AUTH_CODE_NOT_FOUND);
         }
-
     }
 
-    public void validationAuthCode(@RequestBody ValidateEmailRequest request) {
+    public void validationAuthCode(ValidateEmailRequest request) {
 
-        String savedCode = redisService.getCode(request.getEmail());
+        String email = request.getEmail();
+        String inputCode = request.getAuthCode().trim();
+
+        String savedCode = redisService.getCode(email);
 
         if (StringUtils.isEmpty(savedCode)) {
             throw new AuthException(ErrorResponseEnum.AUTH_CODE_NOT_FOUND);
         }
 
-        // 2. 코드 불일치 시
-        if (!savedCode.equals(request.getAuthCode())) {
+        if (!savedCode.equals(inputCode)) {
             throw new AuthException(ErrorResponseEnum.AUTH_CODE_MISMATCH);
         }
+
+        redisService.deleteData(email);
+        redisService.setVerified(email);
+    }
+
+    public boolean isEmailVerified(String email) {
+        return redisService.isVerified(email);
     }
 
     @Override
@@ -171,6 +185,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
+
     @Override
     @Transactional
     public ProfileResponse getProfile(String authorizationHeader) {
@@ -200,6 +215,7 @@ public class UserServiceImpl implements UserService {
                 .notifications(new ArrayList<>())       // 나의 알림 목록 (지금은 빈 리스트)
                 .build();
     }
+
     @Override
     @Transactional
     public List<ProductSimpleResponse> getMyGroupBuyings(Long userId) {
