@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.AuthException;
 import org.example.products.repository.entity.ProductEntity;
-import org.example.redis.RedisUtil;
+import org.example.redis.RedisService;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -20,14 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService{
 
-    private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
+    private final RedisService redisService;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
-
-    private final JavaMailSender mailSender;
-    private final RedisUtil redis;
 
     //인증코드 생성
     public String createCode() {
@@ -66,6 +63,10 @@ public class EmailServiceImpl implements EmailService{
 
     //이메일 전송
     public String sendSimpleMessage(String sendEmail) throws MessagingException {
+        if(redisService.existData(sendEmail)){
+            redisService.deleteData(sendEmail);
+        }
+
         String authCode = createCode();
 
         MimeMessage message = createMail(sendEmail, authCode);
@@ -78,6 +79,7 @@ public class EmailServiceImpl implements EmailService{
             throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
         }
     }
+
 
     @Override
     public void sendCompletionNotification(ProductEntity product, List<UserEntity> participants) {

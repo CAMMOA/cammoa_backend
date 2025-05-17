@@ -10,6 +10,7 @@ public interface UserRepository {
     Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
     boolean existsByUsername(String username);
+    boolean existsByNickname(String nickname);
     boolean existsByEmail(String email);
     void delete(UserEntity user);
 }
