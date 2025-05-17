@@ -13,7 +13,6 @@ import org.example.chat.repository.entity.ReadStatusEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
-import org.example.products.repository.ProductRepository;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
