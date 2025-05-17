@@ -18,6 +18,7 @@ public interface UserService {
     UserResponse signup(UserCreateRequest request);
     SendEmailResponse sendAuthcode(String email) throws MessagingException;
     void validationAuthCode(@RequestBody ValidateEmailRequest request);
+    boolean isEmailVerified(String email);
     JwtToken login(String email, String password);
     void changePassword(@RequestBody ChangePasswordRequest request);
     void deleteUser(Long userId, String password);

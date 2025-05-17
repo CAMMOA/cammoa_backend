@@ -10,7 +10,7 @@ import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
-import org.example.email.service.EmailService;
+import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ResourceException;
 import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.products.service.ParticipationService;
@@ -35,7 +35,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final EmailService emailService;
     private final ParticipationService participationService;
 
     @PostMapping("/signup")
@@ -44,6 +43,12 @@ public class UserController {
         if(!request.getPassword().equals(request.getConfirmPassword())){
             throw new ResourceException(ErrorResponseEnum.PASSWORDS_DO_NOT_MATCH);
         }
+
+        //회원가입 전 이메일 인증 여부 확인
+        if(!userService.isEmailVerified(request.getEmail())){
+            throw new AuthException(ErrorResponseEnum.EMAIL_NOT_VERIFIED);
+        }
+
         UserResponse response = userService.signup(request);
         URI location = URI.create("/api/auth/users" + response.getId());
 
@@ -52,7 +57,6 @@ public class UserController {
                         .data(response)
                         .response(SuccessResponseEnum.RESOURCES_CREATED)
                         .build());
-
     }
 
     @GetMapping("/signup/email/{email}")
