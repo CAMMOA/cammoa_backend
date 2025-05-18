@@ -20,7 +20,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns("http://localhost:8080")
                 // ws://가 아닌 http:// 엔드포인트를 사용할ㄹ 수 있게 해주는 sockJs 라이브러리를 통한 요청을 허용하는 설정
                 .withSockJS();
     }
@@ -38,13 +38,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // 웹소켓요청(connect, subscribe, disconnect) 등의 요청 시에는 http header 등 http 메시지를 넣어올 수 있고, 이를 interceptor를 통해 가로채 토큰 검증
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor()
-                .corePoolSize(8)
-                .maxPoolSize(512)
-                .queueCapacity(32)
-                .keepAliveSeconds(30);
-
-        System.out.println("인터셉터 등록: " + stompHandler);
         registration.interceptors(stompHandler);
     }
 }

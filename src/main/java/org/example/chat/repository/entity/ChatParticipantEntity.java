@@ -20,7 +20,7 @@ public class ChatParticipantEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatroom_id", nullable = false)
+    @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoomEntity chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)

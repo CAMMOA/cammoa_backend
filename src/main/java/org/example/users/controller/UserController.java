@@ -45,9 +45,9 @@ public class UserController {
         }
 
         //회원가입 전 이메일 인증 여부 확인
-//        if(!userService.isEmailVerified(request.getEmail())){
-//            throw new AuthException(ErrorResponseEnum.EMAIL_NOT_VERIFIED);
-//        }
+        if(!userService.isEmailVerified(request.getEmail())){
+            throw new AuthException(ErrorResponseEnum.EMAIL_NOT_VERIFIED);
+        }
 
         UserResponse response = userService.signup(request);
         URI location = URI.create("/api/auth/users" + response.getId());
