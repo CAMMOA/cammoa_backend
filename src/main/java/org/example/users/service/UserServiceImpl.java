@@ -58,11 +58,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse signup(UserCreateRequest request) {
 
-        //유저 중복 확인
-        if(userRepository.existsByUsername(request.getUsername())){
-            throw new ResourceException(ErrorResponseEnum.DUPLICATED_USERNAME);
-        }
-
         //닉네임 중복 확인
         if(userRepository.existsByNickname(request.getNickname())){
             throw new ResourceException(ErrorResponseEnum.DUPLICATED_NICKNAME);
@@ -237,7 +232,7 @@ public class UserServiceImpl implements UserService {
 
     //채팅 목록 조회
     public List<GetChatRoomsResponse> getChatRooms(){
-        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         List<ChatParticipantEntity> chatParticipants = chatParticipantRepository.findAllByUser(user);
