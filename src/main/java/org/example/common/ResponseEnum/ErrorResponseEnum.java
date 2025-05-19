@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorResponseEnum implements Response {
 
     RESPONSE_NOT_VALID(HttpStatus.BAD_REQUEST, "Response Is Not Valid"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid Token"),
 
     //이메일
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed To Send Email"),

@@ -11,6 +11,7 @@ import org.example.chat.repository.entity.ChatParticipantEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.chat.repository.entity.ReadStatusEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
+import org.example.email.service.EmailService;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
 import org.example.users.repository.UserRepository;
@@ -21,16 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @AllArgsConstructor
-public class ChatServiceimpl implements ChatService {
+public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public void saveMessage(Long roomId, ChatMessageDto request) {
         //채팅방 조회
@@ -60,6 +63,13 @@ public class ChatServiceimpl implements ChatService {
                     .build();
             readStatusRepository.save(readStatus);
         }
+
+        List<UserEntity> participants = chatParticipants.stream()
+                .map(ChatParticipantEntity::getUser)
+                .filter(user -> !user.equals(sender))
+                .collect(Collectors.toList());
+
+        emailService.sendChatNotification(participants, request, chatRoom);
     }
 
     public List<ChatMessageDto> getChatHistory(Long roomId) {

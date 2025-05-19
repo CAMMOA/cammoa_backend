@@ -3,6 +3,8 @@ package org.example.email.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.example.chat.dto.ChatMessageDto;
+import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.AuthException;
 import org.example.products.repository.entity.ProductEntity;
@@ -80,7 +82,6 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
-
     @Override
     public void sendCompletionNotification(ProductEntity product, List<UserEntity> participants) {
         for (UserEntity user : participants) {
@@ -102,4 +103,23 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
+    @Override
+    public void sendChatNotification(List<UserEntity> participants, ChatMessageDto chatMessageDto, ChatRoomEntity room){
+        for(UserEntity user: participants){
+            try{
+                MimeMessage email = javaMailSender.createMimeMessage();
+                email.setFrom(senderEmail);
+                email.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+                email.setSubject("[채팅 알림] '" + room.getChatRoomName() + "'에 새 메시지 도착");
+
+                String body = "<h3>" + chatMessageDto.getSenderNickname() + "님이 메시지를 보냈습니다.</h3>"
+                        + "<p>" + chatMessageDto.getMessage() + "</p>";
+
+                email.setText(body, "UTF-8", "html");
+                javaMailSender.send(email);
+            } catch (MessagingException e){
+                throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
+            }
+        }
+    }
 }

@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/api/auth/signup/**", "/api/auth/login", "/connect").permitAll()
+                        .requestMatchers("/api/auth/signup/**", "/api/auth/login", "/connect/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() //게시글 목록 조회, 상세페이지, 검색 기능 로그인 없이 접근 가능하도록 수정
                         .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
@@ -56,7 +56,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트와 연동할 주소
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 프론트와 연동할 주소
         configuration.setAllowedMethods(Arrays.asList("*")); //모든 HTTP 메서드 허용
         configuration.setAllowedHeaders(Arrays.asList("*")); //모든 헤더값 허용
         configuration.setAllowCredentials(true); //자격 증명 허용

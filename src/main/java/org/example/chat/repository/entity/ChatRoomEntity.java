@@ -20,6 +20,7 @@ import java.util.List;
 public class ChatRoomEntity extends BaseTimeEntity {
 
     @Id
+    @Column(name = "chat_room_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatRoomId;
 

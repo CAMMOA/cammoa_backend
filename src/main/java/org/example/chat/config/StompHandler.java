@@ -32,6 +32,7 @@ public class StompHandler implements ChannelInterceptor {
         if(StompCommand.CONNECT == accessor.getCommand()) {
             System.out.println("connect 요청 시 토큰 유효성 검증");
             String bearerToken = accessor.getFirstNativeHeader("Authorization");
+
             String token = bearerToken.substring(7);
 
             //토큰 검증
@@ -41,11 +42,14 @@ public class StompHandler implements ChannelInterceptor {
                     .parseClaimsJws(token)
                     .getBody();
             System.out.println("토큰 검증 완료");
-
         }
+
         if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
             System.out.println("subscribe 검증");
             String bearerToken = accessor.getFirstNativeHeader("Authorization");
+            if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+                throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+            }
             String token = bearerToken.substring(7);
 
             //토큰 검증
@@ -54,8 +58,10 @@ public class StompHandler implements ChannelInterceptor {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+
             String email = claims.getSubject();
             String roomId = accessor.getDestination().split("/")[2];
+
             if(!chatService.isRoomParticipant(email, Long.parseLong(roomId))){
                 throw new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND);
             }
