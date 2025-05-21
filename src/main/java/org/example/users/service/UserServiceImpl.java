@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         } catch (MessagingException e) {
             throw new AuthException(ErrorResponseEnum.EMAIL_SEND_FAILED);
         } catch (DataAccessException e) {
-            throw new AuthException(ErrorResponseEnum.AUTH_CODE_NOT_FOUND);
+            throw new AuthException(ErrorResponseEnum.REDIS_STORE_FAILURE);
         }
     }
 
