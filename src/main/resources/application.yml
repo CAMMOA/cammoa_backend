@@ -16,6 +16,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   mail:
     host: smtp.gmail.com #SMTP 서버 호스트
