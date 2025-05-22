@@ -20,8 +20,8 @@ spring:
   mail:
     host: smtp.gmail.com #SMTP 서버 호스트
     port: 587 #SMTP 서버 포트
-    username: ${spring.mail.username}
-    password: ${spring.mail.password}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
