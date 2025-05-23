@@ -36,6 +36,10 @@ spring:
             enable: true
       auth-code-expiration-millis: 300000 #이메일 인증 코드 만료 시간: 5분
 
+  web:
+    resources:
+      static-locations: file:${IMAGE_UPLOAD}
+
 jwt:
   secret: ${JWT_SECRET_KEY}
 
