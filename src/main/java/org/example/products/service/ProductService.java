@@ -113,6 +113,7 @@ public class ProductService {
                         .title(product.getTitle())
                         .price(product.getPrice())
                         .imageUrl(product.getImage())
+                        .deadline(product.getDeadline())
                         .build())
                 .collect(Collectors.toList());
     }
