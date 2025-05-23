@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:${PORT_NUMBER}/${DATABASE_NAME}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/cammoa
+    username: root
+    password: 1234
 
   data:
     redis:
@@ -12,16 +12,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   mail:
     host: smtp.gmail.com #SMTP 서버 호스트
     port: 587 #SMTP 서버 포트
-    username: ${spring.mail.username}
-    password: ${spring.mail.password}
+    username: rkdms10031013@gmail.com
+    password: vhuy tyfe vznm exiv
     properties:
       mail:
         smtp:
@@ -33,10 +34,10 @@ spring:
       auth-code-expiration-millis: 300000 #이메일 인증 코드 만료 시간: 5분
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: dGhpc2lzYXZlcnlzZWN1cmVhbmRsb25nc2VjcmV0a2V5dGhhdGlzb3ZlcjMyYnl0ZXM=
 
 profiles:
   active: local
 
 file:
-  upload-dir: uploads/
+  upload-dir: C:/cammoa/uploads/
