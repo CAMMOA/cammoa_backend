@@ -11,7 +11,7 @@ public class ProductResponse {
     private String title;
     private String category;
     private String description;
-    private String image;
+    private String imageUrl;
     private int price;
     private LocalDateTime deadline;
     private int numPeople;
