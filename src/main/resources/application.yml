@@ -1,4 +1,56 @@
 spring:
+  profiles:
+    active: local
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DATABASE_HOST}:${PORT_NUMBER}/${DATABASE_NAME}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  mail:
+    host: smtp.gmail.com #SMTP 서버 호스트
+    port: 587 #SMTP 서버 포트
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true # 사용자에 대한 인증 후 메일 전송
+          connectiontimeout: 5000
+          timeout: 5000
+          starttls:
+            enable: true
+      auth-code-expiration-millis: 300000 #이메일 인증 코드 만료 시간: 5분
+
+  web:
+    resources:
+      static-locations: file:${IMAGE_UPLOAD}
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
+file:
+  upload-dir: ${IMAGE_UPLOAD}
+
+---
+spring:
+  profiles:
+    active: dev
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DATABASE_HOST}:${PORT_NUMBER}/${DATABASE_NAME}
