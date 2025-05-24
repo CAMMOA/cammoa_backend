@@ -3,6 +3,7 @@ package org.example.products.repository;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,11 +22,12 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     // 곧 마감되는 공구: 마감일이 오늘 이후인 공구 중 마감일이 가까운 순
     @Query("SELECT p FROM ProductEntity p WHERE p.deadline >= CURRENT_DATE ORDER BY p.deadline ASC")
-    List<ProductEntity> findClosingSoonProducts();
+    List<ProductEntity> findClosingSoonProducts(Pageable pageable);
 
-    // 방금 올라온 공구: 최근 24시간 내에 생성된 공구
-    @Query("SELECT p FROM ProductEntity p WHERE p.createdAt >= :since ORDER BY p.createdAt DESC")
-    List<ProductEntity> findRecentProducts(@Param("since") LocalDateTime since);
+    // 방금 올라온 공구
+    @Query("SELECT p FROM ProductEntity p ORDER BY p.createdAt DESC")
+    List<ProductEntity> findRecentProducts(Pageable pageable);
+
     // 게시글, 작성자 조인 조회
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :productId")
     Optional<ProductEntity> findByIdWithUser(@Param("productId") Long productId);
