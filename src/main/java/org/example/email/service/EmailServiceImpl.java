@@ -25,7 +25,7 @@ public class EmailServiceImpl implements EmailService{
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
 
-    @Value("${spring.mail.username}")
+    @Value("${MAIL_USERNAME}")
     private String senderEmail;
 
     //인증코드 생성
