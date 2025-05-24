@@ -23,6 +23,8 @@ import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,23 +120,25 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    // 오늘의 공동구매 추천 (랜덤덤 8개)
+    // 오늘의 공동구매 추천 (랜덤 8개)
     public List<ProductListResponse> getRecommendedProducts() {
         return productRepository.findRandomRecommendedProducts().stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
-    // 곧 마감되는 공구 (마감일 빠른 순 8개)
+    // 곧 마감되는 공구 (마감일 빠른 순 4개)
     public List<ProductListResponse> getClosingSoonProducts() {
-        return productRepository.findClosingSoonProducts().stream()
+        Pageable limit4 = PageRequest.of(0, 4);
+        return productRepository.findClosingSoonProducts(limit4).stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
-    // 방금 올라온 공구 (생성일 최신순 8개)
+    // 방금 올라온 공구 (생성일 최신순 4개)
     public List<ProductListResponse> getRecentlyPostedProducts() {
-        return productRepository.findRecentProducts(LocalDateTime.now().minusHours(24)).stream()
+        Pageable limit4 = PageRequest.of(0, 4);
+        return productRepository.findRecentProducts(limit4).stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
