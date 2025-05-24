@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: local
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DATABASE_HOST}:${PORT_NUMBER}/${DATABASE_NAME}
@@ -45,3 +42,15 @@ jwt:
 
 file:
   upload-dir: ${IMAGE_UPLOAD}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+      secret-key: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+    region:
+      static: ${CLOUD_AWS_REGION_STATIC}
+    stack:
+      auto: false
+  s3:
+    bucket: ${CLOUD_AWS_S3_BUCKET}
