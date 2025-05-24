@@ -1,18 +1,37 @@
 package org.example.products.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
-@Profile("!local") // 로컬 환경 제외, 배포 환경에서 사용
+@Profile("!local") // 운영환경 전용
+@RequiredArgsConstructor
 public class S3Uploader implements FileUploader {
+
+    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Override
     public String saveFile(MultipartFile file) throws IOException {
-        // S3 업로드 로직 (임시 구현)
-        return "https://s3-bucket-url/" + file.getOriginalFilename();
+        String originalFilename = file.getOriginalFilename();
+        String fileName = UUID.randomUUID() + "_" + originalFilename;
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
+
+        amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
+
+        return amazonS3.getUrl(bucket, fileName).toString();
     }
 }

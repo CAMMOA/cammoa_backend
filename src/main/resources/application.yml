@@ -12,10 +12,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   mail:
     host: smtp.gmail.com #SMTP 서버 호스트
@@ -35,8 +36,17 @@ spring:
 jwt:
   secret: ${JWT_SECRET_KEY}
 
-profiles:
-  active: local
-
 file:
-  upload-dir: uploads/
+  upload-dir: ${IMAGE_UPLOAD}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+      secret-key: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+    region:
+      static: ${CLOUD_AWS_REGION_STATIC}
+    stack:
+      auto: false
+  s3:
+    bucket: ${CLOUD_AWS_S3_BUCKET}
