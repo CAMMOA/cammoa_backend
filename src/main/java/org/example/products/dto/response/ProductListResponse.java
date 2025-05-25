@@ -14,6 +14,7 @@ public class ProductListResponse {
     private int price;
     private String imageUrl;
     private LocalDateTime deadline;
+    private Integer maxParticipants;
 
     public static ProductListResponse from(ProductEntity product) {
         return ProductListResponse.builder()
@@ -22,6 +23,7 @@ public class ProductListResponse {
                 .price(product.getPrice())
                 .imageUrl(product.getImage())
                 .deadline(product.getDeadline())
+                .maxParticipants(product.getMaxParticipants())
                 .build();
     }
 }
