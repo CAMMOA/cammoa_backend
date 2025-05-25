@@ -116,6 +116,7 @@ public class ProductService {
                         .price(product.getPrice())
                         .imageUrl(product.getImage())
                         .deadline(product.getDeadline())
+                        .maxParticipants(product.getMaxParticipants())
                         .build())
                 .collect(Collectors.toList());
     }
