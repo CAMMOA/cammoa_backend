@@ -1,7 +1,6 @@
 package org.example.products.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +31,9 @@ public class S3Uploader implements FileUploader {
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata);
 
-        amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
+        amazonS3.putObject(putObjectRequest);
 
         return amazonS3.getUrl(bucket, fileName).toString();
     }
