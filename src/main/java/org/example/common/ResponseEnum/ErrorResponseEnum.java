@@ -29,6 +29,7 @@ public enum ErrorResponseEnum implements Response {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "You do not have permission to access this post"),
     PASSWORDS_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "Passwords Do Not Match"),
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "Invalid Email"),
 
     //게시글
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not found"),

@@ -65,6 +65,10 @@ public class EmailServiceImpl implements EmailService{
 
     //이메일 전송
     public String sendSimpleMessage(String sendEmail) throws MessagingException {
+        if (!sendEmail.toLowerCase().endsWith("@hufs.ac.kr")) {
+            throw new AuthException(ErrorResponseEnum.INVALID_EMAIL); // 사용자 정의 예외 처리
+        }
+
         if(redisService.existData(sendEmail)){
             redisService.deleteData(sendEmail);
         }
