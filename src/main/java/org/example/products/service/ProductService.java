@@ -130,7 +130,9 @@ public class ProductService {
     // 곧 마감되는 공구 (마감일 빠른 순 4개)
     public List<ProductListResponse> getClosingSoonProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
-        return productRepository.findClosingSoonProducts(limit4).stream()
+        return productRepository.findClosingSoonProducts(limit4)
+                .getContent()
+                .stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -138,7 +140,9 @@ public class ProductService {
     // 방금 올라온 공구 (생성일 최신순 4개)
     public List<ProductListResponse> getRecentlyPostedProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
-        return productRepository.findRecentProducts(limit4).stream()
+        return productRepository.findRecentProducts(limit4)
+                .getContent()
+                .stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
