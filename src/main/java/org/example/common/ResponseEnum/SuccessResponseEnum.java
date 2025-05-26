@@ -13,6 +13,7 @@ public enum SuccessResponseEnum implements Response {
     RESOURCES_GET(HttpStatus.OK, "Resourses Is Got Successfully"),
 
     LOGIN_SUCCESS(HttpStatus.OK, "Login Successful"),
+    LOGOUT_SUCCESS(HttpStatus.OK, "Logout Successful"),
     PASSWORD_CHANGED(HttpStatus.OK, "Password Changed"),
     WITHDRAWAL_SUCCESS(HttpStatus.OK, "User Withdrawal Success"),
 

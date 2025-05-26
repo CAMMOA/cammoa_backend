@@ -20,8 +20,7 @@ public class RedisService {
 
     //데이터 조회
     public String getData(String key){
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        return valueOperations.get(key);
+        return redisTemplate.opsForValue().get(key);
     }
 
     //키 존재 여부 확인
@@ -62,5 +61,13 @@ public class RedisService {
     public boolean isVerified(String email) {
         String value = redisTemplate.opsForValue().get("verified:" + email);
         return "true".equals(value);
+    }
+
+    public void setBlackList(String token, String value, long expirationMills){
+        redisTemplate.opsForValue().set("blacklist:" + token, value, expirationMills);
+    }
+
+    public boolean isBlackList(String token){
+        return Boolean.TRUE.equals(redisTemplate.hasKey("blacklist:" + token));
     }
 }

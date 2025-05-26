@@ -1,6 +1,7 @@
 package org.example.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
 import org.example.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     //특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
@@ -42,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() //게시글 목록 조회, 상세페이지, 검색 기능 로그인 없이 접근 가능하도록 수정
                         .anyRequest().authenticated())
                 //JWT 인증을 위하여 직접 구현한 필터 추가
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .build();

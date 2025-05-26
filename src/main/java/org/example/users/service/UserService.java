@@ -20,6 +20,7 @@ public interface UserService {
     void validationAuthCode(@RequestBody ValidateEmailRequest request);
     boolean isEmailVerified(String email);
     JwtToken login(String email, String password);
+    void logout(String accessToken);
     void changePassword(@RequestBody ChangePasswordRequest request);
     void deleteUser(Long userId, String password);
     ProfileResponse getProfile(String authorizationHeader);
