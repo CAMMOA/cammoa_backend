@@ -100,6 +100,16 @@ public class UserController {
         );
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken){
+        userService.logout(accessToken);
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.LOGOUT_SUCCESS)
+                        .build()
+        );
+    }
+
     @PostMapping("/users/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(request);

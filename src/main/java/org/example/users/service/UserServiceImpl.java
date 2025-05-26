@@ -18,6 +18,7 @@ import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
+import org.example.security.constant.JwtTokenConstant;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.UserCreateRequest;
@@ -148,6 +149,24 @@ public class UserServiceImpl implements UserService {
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication, user.getId());
 
         return jwtToken;
+    }
+
+    @Override
+    @Transactional
+    public void logout(String accessToken){
+        if(!StringUtils.hasText(accessToken) || !accessToken.startsWith("Bearer")){
+            throw new AuthException(ErrorResponseEnum.INVALID_TOKEN);
+        }
+
+        String token = accessToken.replace(JwtTokenConstant.BEARER_PREFIX, "");
+
+        long expirationMillis = jwtTokenProvider.getExpiration(token);
+
+        if (expirationMillis <= 0) {
+            throw new AuthException(ErrorResponseEnum.INVALID_TOKEN);
+        }
+
+        redisService.setBlackList(token, "logout", expirationMillis);
     }
 
     @Transactional

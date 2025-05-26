@@ -127,4 +127,10 @@ public class JwtTokenProvider {
         return claims.get("userId", Long.class);  //userId 가져오기
     }
 
+    public long getExpiration(String token) {
+        Claims claims = parseClaims(token);
+        Date expiration = claims.getExpiration();
+        long now = new Date().getTime();
+        return expiration.getTime() - now;
+    }
 }
