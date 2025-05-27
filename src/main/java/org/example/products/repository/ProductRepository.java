@@ -51,7 +51,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :postId AND p.deletedAt IS NULL")
     Optional<ProductEntity> findByIdWithUserAndNotDeleted(@Param("postId") Long postId);
 
-    List<ProductEntity> findByCategory(CategoryEnum category);
+    List<ProductEntity> findByCategoryAndDeletedAtIsNull(CategoryEnum category);
+    List<ProductEntity> findByDeletedAtIsNull(); // 전체 목록 조회 시 사용
 
 }
 

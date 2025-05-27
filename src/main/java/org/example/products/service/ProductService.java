@@ -104,9 +104,9 @@ public class ProductService {
         List<ProductEntity> products;
 
         if (category != null) {
-            products = productRepository.findByCategory(category);
+            products = productRepository.findByCategoryAndDeletedAtIsNull(category);
         } else {
-            products = productRepository.findAll();
+            products = productRepository.findByDeletedAtIsNull();
         }
 
         return products.stream()
