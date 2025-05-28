@@ -112,7 +112,7 @@ public class ProductController {
     }
     //게시글 검색
     @GetMapping("/search")
-    public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword, @RequestParam(value = "category", required = false) String category, @RequestParam(value = "sortTypeEnum", defaultValue = "DEADLINE") SortTypeEnum sortTypeEnum) {
+    public ResponseEntity<?> searchProducts(@RequestParam(value = "keyword", required = false) String keyword, @RequestParam(value = "category", required = false) String category, @RequestParam(value = "sortTypeEnum", defaultValue = "DEADLINE") SortTypeEnum sortTypeEnum) {
 
         CategoryEnum categoryEnum = null;
         if (category != null && !category.isBlank()) {
