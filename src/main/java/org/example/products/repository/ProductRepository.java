@@ -29,10 +29,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Query("SELECT p FROM ProductEntity p WHERE p.deletedAt IS NULL ORDER BY p.createdAt DESC")
     Page<ProductEntity> findRecentProducts(Pageable pageable);
 
-    // 게시글, 작성자 조인 조회
-    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.user WHERE p.productId = :productId")
-    Optional<ProductEntity> findByIdWithUser(@Param("productId") Long productId);
-
     //게시글 검식 시 카테고리, 추천, 최신, 마감순 조회
     @Query("SELECT p FROM ProductEntity p " +
             "WHERE p.deletedAt IS NULL " +
