@@ -172,7 +172,7 @@ public class ProductService {
     }
 
     public ProductDetailResponse getProductDetail(Long productId) {
-        ProductEntity product = productRepository.findByIdWithUser(productId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(productId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
 
         //게시글의 모든 이미지 URL 조회
@@ -219,7 +219,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
-        ProductEntity product = productRepository.findByIdWithUser(postId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         if (!product.getUser().getId().equals(userId)) {
@@ -242,15 +242,15 @@ public class ProductService {
             sortTypeEnum = SortTypeEnum.DEADLINE;
         }
 
+        if ((keyword == null || keyword.isBlank()) && category == null) {
+            throw new ResourceException(ErrorResponseEnum.INVALID_SEARCH_CONDITION);
+        }
+
         List<ProductEntity> products;
 
         // keyword가 없는 경우
         if (keyword == null || keyword.isBlank()) {
-            if (category != null) {
-                products = productRepository.findByCategoryAndDeletedAtIsNull(category);
-            } else {
-                products = productRepository.findByDeletedAtIsNull();
-            }
+            products = productRepository.findByCategoryAndDeletedAtIsNull(category);
 
             // 정렬
             if (sortTypeEnum == SortTypeEnum.DEADLINE) {

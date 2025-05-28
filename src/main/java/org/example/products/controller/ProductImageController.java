@@ -32,7 +32,7 @@ public class ProductImageController {
             @PathVariable Long productId,
             @RequestParam("images") List<MultipartFile> images) throws IOException {
 
-        ProductEntity product = productRepository.findById(productId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(productId)
                 .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND));
 
         List<String> imageUrls = new ArrayList<>();
