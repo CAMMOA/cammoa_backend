@@ -219,7 +219,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
-        ProductEntity product = productRepository.findByIdWithUser(postId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         if (!product.getUser().getId().equals(userId)) {
