@@ -37,7 +37,8 @@ public class ProductImageController {
 
         List<String> imageUrls = new ArrayList<>();
 
-        for (MultipartFile image : images) {
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile image = images.get(i);
             String url = fileUploadService.saveFile(image);
             imageUrls.add(url);
 
@@ -46,6 +47,11 @@ public class ProductImageController {
                     .imageUrl(url)
                     .build();
             productImageRepository.save(imageEntity);
+
+            if (i == 0) {
+                product.setImage(url); // ← ProductEntity.image 필드에 대표 이미지 설정
+                productRepository.save(product);
+            }
         }
 
         return ResponseEntity.ok(

@@ -202,7 +202,7 @@ public class ProductService {
                 .title(product.getTitle())
                 .description(product.getDescription())
                 .category(product.getCategory().name())
-                .imageUrls(imageUrls)
+                .imageUrl(imageUrls)
                 .price(product.getPrice())
                 .deadline(product.getDeadline())
                 .place(product.getPlace())

@@ -13,7 +13,7 @@ public class ProductDetailResponse {
     private String title;
     private String description;
     private String category;
-    private List<String> imageUrls;
+    private List<String> imageUrl;
     private Integer price;
     private LocalDateTime deadline;
     private String place;
