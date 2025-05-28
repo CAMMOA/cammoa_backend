@@ -54,7 +54,11 @@ public enum ErrorResponseEnum implements Response {
     NOT_JOINED(HttpStatus.BAD_REQUEST, "You have not joined this group buying and cannot cancel participation."),
 
     //알림
-    POST_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Group buying is not yet completed");
+    POST_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Group buying is not yet completed"),
+
+    //검색
+    INVALID_SEARCH_CONDITION(HttpStatus.BAD_REQUEST, "Invalid search condition. Please provide a keyword or category.");
+
     private final HttpStatus httpStatus;
     private final String message;
 }
