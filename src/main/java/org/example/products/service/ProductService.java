@@ -242,12 +242,34 @@ public class ProductService {
             sortTypeEnum = SortTypeEnum.DEADLINE;
         }
 
-        String categoryEnum = (category != null) ? category.name() : null;
-        List<ProductEntity> products = productRepository.searchProductsByKeywordAndCategory(
-                keyword,
-                category,
-                sortTypeEnum.name()
-        );
+        List<ProductEntity> products;
+
+        // keyword가 없는 경우
+        if (keyword == null || keyword.isBlank()) {
+            if (category != null) {
+                products = productRepository.findByCategoryAndDeletedAtIsNull(category);
+            } else {
+                products = productRepository.findByDeletedAtIsNull();
+            }
+
+            // 정렬
+            if (sortTypeEnum == SortTypeEnum.DEADLINE) {
+                products.sort((p1, p2) -> p1.getDeadline().compareTo(p2.getDeadline()));
+            } else if (sortTypeEnum == SortTypeEnum.RECENT) {
+                products.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
+            } else if (sortTypeEnum == SortTypeEnum.RECOMMEND) {
+                Collections.shuffle(products);
+            }
+        }
+        // keyword가 있는 경우 (기존 쿼리 활용)
+        else {
+            products = productRepository.searchProductsByKeywordAndCategory(
+                    keyword,
+                    category,
+                    sortTypeEnum.name()
+            );
+        }
+
 
         return products.stream()
                 .map(this::convertToResponse)
