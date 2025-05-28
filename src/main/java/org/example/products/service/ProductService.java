@@ -17,10 +17,12 @@ import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.*;
 import org.example.products.repository.ParticipationRepository;
+import org.example.products.repository.ProductImageRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
+import org.example.products.repository.entity.ProductImageEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +47,7 @@ public class ProductService {
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final EmailService emailService;
+    private final ProductImageRepository productImageRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -172,6 +175,11 @@ public class ProductService {
         ProductEntity product = productRepository.findByIdWithUser(productId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
 
+        //게시글의 모든 이미지 URL 조회
+        List<String> imageUrls = productImageRepository.findAllByProduct(product).stream()
+                .map(ProductImageEntity::getImageUrl)
+                .toList();
+
         // 작성자 본인의 다른 게시글 중 현재 게시글 제외하고 6개 랜덤 추출
         List<ProductSimpleResponse> relatedPosts = productRepository.findByUser(product.getUser()).stream()
                 .filter(p -> !p.getProductId().equals(product.getProductId()))
@@ -194,7 +202,7 @@ public class ProductService {
                 .title(product.getTitle())
                 .description(product.getDescription())
                 .category(product.getCategory().name())
-                .imageUrl(product.getImage())
+                .imageUrl(imageUrls)
                 .price(product.getPrice())
                 .deadline(product.getDeadline())
                 .place(product.getPlace())

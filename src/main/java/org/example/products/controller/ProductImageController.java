@@ -1,8 +1,14 @@
 package org.example.products.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
+import org.example.exception.CustomException;
+import org.example.products.repository.ProductImageRepository;
+import org.example.products.repository.ProductRepository;
+import org.example.products.repository.entity.ProductEntity;
+import org.example.products.repository.entity.ProductImageEntity;
 import org.example.products.service.FileUploader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +24,34 @@ import java.util.List;
 public class ProductImageController {
 
     private final FileUploader fileUploadService;
+    private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
 
     @PostMapping("/{productId}/images")
     public ResponseEntity<?> uploadImages(
             @PathVariable Long productId,
             @RequestParam("images") List<MultipartFile> images) throws IOException {
 
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND));
+
         List<String> imageUrls = new ArrayList<>();
 
-        for (MultipartFile image : images) {
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile image = images.get(i);
             String url = fileUploadService.saveFile(image);
             imageUrls.add(url);
+
+            ProductImageEntity imageEntity = ProductImageEntity.builder()
+                    .product(product)
+                    .imageUrl(url)
+                    .build();
+            productImageRepository.save(imageEntity);
+
+            if (i == 0) {
+                product.setImage(url); // ← ProductEntity.image 필드에 대표 이미지 설정
+                productRepository.save(product);
+            }
         }
 
         return ResponseEntity.ok(
