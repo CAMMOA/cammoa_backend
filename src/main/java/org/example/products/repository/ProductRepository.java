@@ -50,6 +50,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     List<ProductEntity> findByCategoryAndDeletedAtIsNull(CategoryEnum category);
     List<ProductEntity> findByDeletedAtIsNull(); // 전체 목록 조회 시 사용
+    List<ProductEntity> findByUserAndDeletedAtIsNull(UserEntity user);
+
 
 }
 
