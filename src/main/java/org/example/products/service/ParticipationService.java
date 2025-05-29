@@ -59,9 +59,9 @@ public class ParticipationService {
         List<ParticipationEntity> participations = participationRepository.findAllByUser(user);
 
         return participations.stream()
-                .map(participation -> {
-                    ProductEntity product = participation.getProduct();
-                    return ProductSimpleResponse.builder()
+                .map(ParticipationEntity::getProduct)
+                .filter(product -> product.getDeletedAt() == null) // 삭제된 게시글 제외
+                .map(product -> ProductSimpleResponse.builder()
                             .productId(product.getProductId())
                             .title(product.getTitle())
                             .imageUrl(product.getImage())
@@ -69,8 +69,8 @@ public class ParticipationService {
                             .maxParticipants(product.getMaxParticipants())
                             .price(product.getPrice())
                             .deadline(product.getDeadline())
-                            .build();
-                })
+                            .build()
+                )
                 .collect(Collectors.toList());
     }
 
