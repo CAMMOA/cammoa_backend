@@ -222,6 +222,8 @@ public class UserServiceImpl implements UserService {
                         .title(product.getTitle())
                         .currentParticipants(product.getCurrentParticipants())
                         .maxParticipants(product.getMaxParticipants())
+                        .price(product.getPrice())
+                        .deadline(product.getDeadline())
                         .build())
                 .toList();
 
@@ -250,6 +252,8 @@ public class UserServiceImpl implements UserService {
                         .title(product.getTitle())
                         .currentParticipants(product.getCurrentParticipants())
                         .maxParticipants(product.getMaxParticipants())
+                        .price(product.getPrice())
+                        .deadline(product.getDeadline())
                         .build())
                 .toList();
     }

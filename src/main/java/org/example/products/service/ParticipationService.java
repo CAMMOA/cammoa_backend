@@ -28,7 +28,7 @@ public class ParticipationService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        ProductEntity product = productRepository.findById(postId)
+        ProductEntity product = productRepository.findByProductIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         return participationRepository.existsByUserAndProduct(user, product);
@@ -39,7 +39,7 @@ public class ParticipationService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        ProductEntity product = productRepository.findById(postId)
+        ProductEntity product = productRepository.findByProductIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         ParticipationEntity participation = participationRepository.findByUserAndProduct(user, product)
@@ -67,6 +67,8 @@ public class ParticipationService {
                             .imageUrl(product.getImage())
                             .currentParticipants(product.getCurrentParticipants())
                             .maxParticipants(product.getMaxParticipants())
+                            .price(product.getPrice())
+                            .deadline(product.getDeadline())
                             .build();
                 })
                 .collect(Collectors.toList());
