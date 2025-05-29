@@ -8,4 +8,5 @@ import java.util.List;
 public interface ChatMessageRepository {
     ChatMessageEntity save(ChatMessageEntity chatMessage);
     List<ChatMessageEntity> findByChatRoomOrderByCreatedTimeAsc(ChatRoomEntity chatRoom);
+    ChatMessageEntity findTopByChatRoomOrderByCreatedTimeDesc(ChatRoomEntity chatRoom);
 }

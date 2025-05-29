@@ -13,4 +13,5 @@ public class GetChatRoomsResponse {
     private Long roomId;
     private String roomName;
     private Long unreadMessageCount;
+    private String lastMessage;
 }
