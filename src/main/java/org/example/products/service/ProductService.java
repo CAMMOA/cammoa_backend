@@ -318,6 +318,10 @@ public class ProductService {
 
         ProductEntity product = productRepository.findByProductIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
+        //작성자 본인 참여 방지
+        if (product.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorResponseEnum.WRITER_CANNOT_JOIN);
+        }
 
         if (participationRepository.existsByUserAndProduct(user, product)) {
             throw new CustomException(ErrorResponseEnum.ALREADY_JOINED);

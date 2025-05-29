@@ -52,6 +52,7 @@ public enum ErrorResponseEnum implements Response {
     POST_CLOSED(HttpStatus.BAD_REQUEST, "This group buying is already closed."),
     POST_FULL(HttpStatus.BAD_REQUEST, "This group buying has reached the maximum number of participants."),
     NOT_JOINED(HttpStatus.BAD_REQUEST, "You have not joined this group buying and cannot cancel participation."),
+    WRITER_CANNOT_JOIN(HttpStatus.BAD_REQUEST, "The author cannot join their own group buying post."),
 
     //알림
     POST_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Group buying is not yet completed"),
