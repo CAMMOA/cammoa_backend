@@ -7,7 +7,7 @@ import java.util.List;
 @Getter
 @Builder
 public class ProfileResponse {
-
+    private Long userId;
     private String nickname;
     private String email;
     private List<?> myGroupBuyings;      // 작성한 공동구매 목록 (지금은 빈 리스트)
