@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        List<ProductEntity> products = productRepository.findByUser(user);
+        List<ProductEntity> products = productRepository.findByUserAndDeletedAtIsNull(user);
 
         List<ProductSimpleResponse> myGroupBuyings = products.stream()
                 .map(product -> ProductSimpleResponse.builder()
@@ -240,7 +240,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        List<ProductEntity> products = productRepository.findByUser(user);
+        List<ProductEntity> products = productRepository.findByUserAndDeletedAtIsNull(user);
 
         return products.stream()
                 .map(product -> ProductSimpleResponse.builder()

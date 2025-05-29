@@ -17,10 +17,12 @@ import org.example.products.dto.request.ProductCreateRequest;
 import org.example.products.dto.request.ProductUpdateRequest;
 import org.example.products.dto.response.*;
 import org.example.products.repository.ParticipationRepository;
+import org.example.products.repository.ProductImageRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.CategoryEnum;
 import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
+import org.example.products.repository.entity.ProductImageEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +47,7 @@ public class ProductService {
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final EmailService emailService;
+    private final ProductImageRepository productImageRepository;
 
     public ProductResponse createProduct(ProductCreateRequest request, Long userId) {
 
@@ -104,9 +107,9 @@ public class ProductService {
         List<ProductEntity> products;
 
         if (category != null) {
-            products = productRepository.findByCategory(category);
+            products = productRepository.findByCategoryAndDeletedAtIsNull(category);
         } else {
-            products = productRepository.findAll();
+            products = productRepository.findByDeletedAtIsNull();
         }
 
         return products.stream()
@@ -169,8 +172,13 @@ public class ProductService {
     }
 
     public ProductDetailResponse getProductDetail(Long productId) {
-        ProductEntity product = productRepository.findByIdWithUser(productId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(productId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND)); // 예외처리
+
+        //게시글의 모든 이미지 URL 조회
+        List<String> imageUrls = productImageRepository.findAllByProduct(product).stream()
+                .map(ProductImageEntity::getImageUrl)
+                .toList();
 
         // 작성자 본인의 다른 게시글 중 현재 게시글 제외하고 6개 랜덤 추출
         List<ProductSimpleResponse> relatedPosts = productRepository.findByUser(product.getUser()).stream()
@@ -194,7 +202,7 @@ public class ProductService {
                 .title(product.getTitle())
                 .description(product.getDescription())
                 .category(product.getCategory().name())
-                .imageUrl(product.getImage())
+                .imageUrl(imageUrls)
                 .price(product.getPrice())
                 .deadline(product.getDeadline())
                 .place(product.getPlace())
@@ -211,7 +219,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse updateProduct(Long postId, ProductUpdateRequest request, Long userId) {
-        ProductEntity product = productRepository.findByIdWithUser(postId)
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         if (!product.getUser().getId().equals(userId)) {
@@ -234,12 +242,34 @@ public class ProductService {
             sortTypeEnum = SortTypeEnum.DEADLINE;
         }
 
-        String categoryEnum = (category != null) ? category.name() : null;
-        List<ProductEntity> products = productRepository.searchProductsByKeywordAndCategory(
-                keyword,
-                category,
-                sortTypeEnum.name()
-        );
+        if ((keyword == null || keyword.isBlank()) && category == null) {
+            throw new ResourceException(ErrorResponseEnum.INVALID_SEARCH_CONDITION);
+        }
+
+        List<ProductEntity> products;
+
+        // keyword가 없는 경우
+        if (keyword == null || keyword.isBlank()) {
+            products = productRepository.findByCategoryAndDeletedAtIsNull(category);
+
+            // 정렬
+            if (sortTypeEnum == SortTypeEnum.DEADLINE) {
+                products.sort((p1, p2) -> p1.getDeadline().compareTo(p2.getDeadline()));
+            } else if (sortTypeEnum == SortTypeEnum.RECENT) {
+                products.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
+            } else if (sortTypeEnum == SortTypeEnum.RECOMMEND) {
+                Collections.shuffle(products);
+            }
+        }
+        // keyword가 있는 경우 (기존 쿼리 활용)
+        else {
+            products = productRepository.searchProductsByKeywordAndCategory(
+                    keyword,
+                    category,
+                    sortTypeEnum.name()
+            );
+        }
+
 
         return products.stream()
                 .map(this::convertToResponse)

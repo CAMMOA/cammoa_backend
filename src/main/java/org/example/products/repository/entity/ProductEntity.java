@@ -5,6 +5,8 @@ import lombok.*;
 import org.example.users.repository.entity.UserEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -69,5 +71,10 @@ public class ProductEntity {
     private UserEntity user;
 
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImageEntity> images = new ArrayList<>();
+
+
 
 }
