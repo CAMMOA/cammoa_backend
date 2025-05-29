@@ -194,6 +194,8 @@ public class ProductService {
                         .imageUrl(p.getImage())
                         .currentParticipants(p.getCurrentParticipants())
                         .maxParticipants(p.getMaxParticipants())
+                        .price(p.getPrice())
+                        .deadline(p.getDeadline())
                         .build())
                 .toList();
 
@@ -314,7 +316,7 @@ public class ProductService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.USER_NOT_FOUND));
 
-        ProductEntity product = productRepository.findById(postId)
+        ProductEntity product = productRepository.findByProductIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new ResourceException(ErrorResponseEnum.POST_NOT_FOUND));
 
         if (participationRepository.existsByUserAndProduct(user, product)) {

@@ -14,6 +14,7 @@ import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ResourceException;
 import org.example.products.dto.response.ProductSimpleResponse;
 import org.example.products.service.ParticipationService;
+import org.example.security.JwtTokenProvider;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
@@ -36,6 +37,7 @@ public class UserController {
 
     private final UserService userService;
     private final ParticipationService participationService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCreateRequest request) {
@@ -144,9 +146,13 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}/group-buyings")
-    public ResponseEntity<?> getMyGroupBuyings(@PathVariable Long userId) {
-        List<ProductSimpleResponse> response = userService.getMyGroupBuyings(userId);
+    public ResponseEntity<?> getMyGroupBuyings(@PathVariable Long userId,  @RequestHeader("Authorization") String authorizationHeader) {
+        Long tokenUserId = jwtTokenProvider.getUserId(authorizationHeader.replace("Bearer ", ""));
+        if (!tokenUserId.equals(userId)) {
+            throw new AuthException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
+        }
 
+        List<ProductSimpleResponse> response = userService.getMyGroupBuyings(userId);
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductSimpleResponse>>builder()
                         .data(response)
@@ -156,10 +162,13 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}/participated-group-buyings")
-    public ResponseEntity<?> getParticipatedGroupBuyings(@PathVariable Long userId) {
+    public ResponseEntity<?> getParticipatedGroupBuyings(@PathVariable Long userId,  @RequestHeader("Authorization") String authorizationHeader) {
+        Long tokenUserId = jwtTokenProvider.getUserId(authorizationHeader.replace("Bearer ", ""));
+        if (!tokenUserId.equals(userId)) {
+            throw new AuthException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
+        }
 
         List<ProductSimpleResponse> response = participationService.getParticipatedGroupBuyings(userId);
-
         return ResponseEntity.ok(
                 CommonResponseEntity.<List<ProductSimpleResponse>>builder()
                         .data(response)
