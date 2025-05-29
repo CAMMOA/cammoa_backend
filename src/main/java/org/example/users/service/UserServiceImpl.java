@@ -4,9 +4,12 @@ import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.response.GetChatRoomsResponse;
+import org.example.chat.repository.ChatMessageRepository;
 import org.example.chat.repository.ChatParticipantRepository;
 import org.example.chat.repository.ReadStatusRepository;
+import org.example.chat.repository.entity.ChatMessageEntity;
 import org.example.chat.repository.entity.ChatParticipantEntity;
+import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.email.dto.request.ValidateEmailRequest;
 import org.example.email.dto.response.SendEmailResponse;
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
     private final ChatParticipantRepository chatParticipantRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
 
     @Override
@@ -258,11 +262,18 @@ public class UserServiceImpl implements UserService {
         List<GetChatRoomsResponse> getChatRooms = new ArrayList<>();
 
         for(ChatParticipantEntity c: chatParticipants) {
+            ChatRoomEntity chatroom = c.getChatRoom();
+
+            //마지막 메시지 조회
+            ChatMessageEntity lastMessage = chatMessageRepository.findTopByChatRoomOrderByCreatedTimeDesc(chatroom);
+            //읽지 않은 메시지 개수 조회
             Long count = readStatusRepository.countByChatRoomAndUserAndIsReadFalse(c.getChatRoom(), user);
+
             GetChatRoomsResponse getChatRoom = GetChatRoomsResponse.builder()
                     .roomId(c.getChatRoom().getChatRoomId())
                     .roomName(c.getChatRoom().getChatRoomName())
                     .unreadMessageCount(count)
+                    .lastMessage(lastMessage != null ? lastMessage.getContent() : null)
                     .build();
             getChatRooms.add(getChatRoom);
         }

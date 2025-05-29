@@ -18,4 +18,7 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
 
     @Override
     public List<ChatMessageEntity> findByChatRoomOrderByCreatedTimeAsc(ChatRoomEntity chatRoom){ return chatMessageJpaRepository.findByChatRoomOrderByCreatedTimeAsc(chatRoom); }
+
+    @Override
+    public ChatMessageEntity findTopByChatRoomOrderByCreatedTimeDesc(ChatRoomEntity chatRoom){ return chatMessageJpaRepository.findTopByChatRoomOrderByCreatedTimeDesc(chatRoom); }
 }
