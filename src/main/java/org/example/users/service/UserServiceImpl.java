@@ -226,6 +226,7 @@ public class UserServiceImpl implements UserService {
                 .toList();
 
         return ProfileResponse.builder()
+                .userId(user.getId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .myGroupBuyings(myGroupBuyings)      // 작성한 공동구매 목록
