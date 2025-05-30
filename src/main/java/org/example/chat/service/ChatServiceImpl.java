@@ -14,6 +14,7 @@ import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.email.service.EmailService;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
+import org.example.products.repository.entity.ProductEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -123,11 +124,24 @@ public class ChatServiceImpl implements ChatService {
         //채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
-
+        //현재 유저 조회
         UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
+        //채팅 참여자 조회
+        ChatParticipantEntity participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND));
+        //게시글 조회
+        ProductEntity product = chatRoom.getProduct();
+        //게시글 생성자인지 확인
+        boolean isCreator = product.getUser().getId().equals(user.getId());
 
-        ChatParticipantEntity c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()-> new ChatException(ErrorResponseEnum.USER_NOT_FOUND));
-        chatParticipantRepository.delete(c);
+        if (isCreator){
+            //게시글이 삭제된 상태인지 확인
+            if (product.getDeletedAt() == null){
+                throw new ChatException(ErrorResponseEnum.CREATOR_CANNOT_LEAVE_CHATROOM);
+            }
+            chatParticipantRepository.delete(participant);
+        } else{
+            chatParticipantRepository.delete(participant);
+        }
     }
 }

@@ -46,6 +46,7 @@ public enum ErrorResponseEnum implements Response {
     //채팅방
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom Not Found"),
     PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "Particiant Not Found"),
+    CREATOR_CANNOT_LEAVE_CHATROOM(HttpStatus.FORBIDDEN, "Creator Cannot Leave Chatroom"),
 
     //공동구매 참여
     ALREADY_JOINED(HttpStatus.BAD_REQUEST, "You have already joined this group buying."),
