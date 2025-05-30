@@ -13,5 +13,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationEnti
     Optional<ParticipationEntity> findByUserAndProduct(UserEntity user, ProductEntity product);
     List<ParticipationEntity> findAllByUser(UserEntity user);
     List<ParticipationEntity> findAllByProduct(ProductEntity product);
+    int countByProduct(ProductEntity product);
 
 }

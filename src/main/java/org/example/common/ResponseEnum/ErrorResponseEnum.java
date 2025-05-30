@@ -36,6 +36,7 @@ public enum ErrorResponseEnum implements Response {
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "Deadline must be after the current time"),
     INVALID_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Max participants must be greater than current participants"),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid category"),
+    POST_HAS_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Cannot delete the post because other users have already joined"),
 
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
