@@ -17,7 +17,9 @@ import org.example.email.service.EmailService;
 import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ResourceException;
 import org.example.products.dto.response.ProductSimpleResponse;
+import org.example.products.repository.ParticipationRepository;
 import org.example.products.repository.ProductRepository;
+import org.example.products.repository.entity.ParticipationEntity;
 import org.example.products.repository.entity.ProductEntity;
 import org.example.redis.RedisService;
 import org.example.security.JwtTokenProvider;
@@ -58,6 +60,7 @@ public class UserServiceImpl implements UserService {
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
+    private final ParticipationRepository participationRepository;
 
     @Override
     @Transactional
@@ -212,7 +215,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
-
+        //내가 작성한 공구
         List<ProductEntity> products = productRepository.findByUserAndDeletedAtIsNull(user);
 
         List<ProductSimpleResponse> myGroupBuyings = products.stream()
@@ -222,14 +225,31 @@ public class UserServiceImpl implements UserService {
                         .title(product.getTitle())
                         .currentParticipants(product.getCurrentParticipants())
                         .maxParticipants(product.getMaxParticipants())
+                        .price(product.getPrice())
+                        .deadline(product.getDeadline())
+                        .build())
+                .toList();
+        //내가 참여한 공구
+        List<ProductSimpleResponse> joinedGroupBuyings = participationRepository.findAllByUser(user).stream()
+                .map(ParticipationEntity::getProduct)
+                .filter(product -> product.getDeletedAt() == null && !product.getUser().getId().equals(userId)) // 삭제 안 됨 + 본인 글 제외
+                .map(product -> ProductSimpleResponse.builder()
+                        .productId(product.getProductId())
+                        .imageUrl(product.getImage())
+                        .title(product.getTitle())
+                        .currentParticipants(product.getCurrentParticipants())
+                        .maxParticipants(product.getMaxParticipants())
+                        .price(product.getPrice())
+                        .deadline(product.getDeadline())
                         .build())
                 .toList();
 
         return ProfileResponse.builder()
+                .userId(user.getId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .myGroupBuyings(myGroupBuyings)      // 작성한 공동구매 목록
-                .joinedGroupBuyings(new ArrayList<>())  // 참여한 공동구매 목록 (지금은 빈 리스트)
+                .joinedGroupBuyings(joinedGroupBuyings)  // 참여한 공동구매 목록 (지금은 빈 리스트)
                 .notifications(new ArrayList<>())       // 나의 알림 목록 (지금은 빈 리스트)
                 .build();
     }
@@ -249,6 +269,8 @@ public class UserServiceImpl implements UserService {
                         .title(product.getTitle())
                         .currentParticipants(product.getCurrentParticipants())
                         .maxParticipants(product.getMaxParticipants())
+                        .price(product.getPrice())
+                        .deadline(product.getDeadline())
                         .build())
                 .toList();
     }
