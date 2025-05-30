@@ -307,7 +307,14 @@ public class ProductService {
         if (!product.getUser().getId().equals(userId)) {
             throw new AuthException(ErrorResponseEnum.UNAUTHORIZED_ACCESS);
         }
+        //본인 외 다른 참여자가 존재하는지 확인
+        List<ParticipationEntity> participants = participationRepository.findAllByProduct(product);
+        boolean hasOtherParticipants = participants.stream()
+                .anyMatch(p -> !p.getUser().getId().equals(userId));
 
+        if (hasOtherParticipants) {
+            throw new CustomException(ErrorResponseEnum.POST_HAS_PARTICIPANTS);
+        }
         product.setDeletedAt(LocalDateTime.now());
     }
 
