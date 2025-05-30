@@ -94,10 +94,15 @@ public class ChatServiceImpl implements ChatService {
         List<ChatMessageEntity> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedTimeAsc(chatRoom);
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         for (ChatMessageEntity c : chatMessages) {
+            Long unreadCount = readStatusRepository.countByChatMessageAndIsReadFalse(c);
+
             ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                    .roomId(c.getChatRoom().getChatRoomId())
                     .message(c.getContent())
                     .senderNickname(c.getUser().getNickname())
                     .senderEmail(c.getUser().getEmail())
+                    .unreadMessageCount(unreadCount)
+                    .createdTime(c.getCreatedTime())
                     .build();
             chatMessageDtos.add(chatMessageDto);
         }

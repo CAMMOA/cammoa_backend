@@ -1,6 +1,7 @@
 package org.example.chat.repository;
 
 import lombok.AllArgsConstructor;
+import org.example.chat.repository.entity.ChatMessageEntity;
 import org.example.chat.repository.entity.ChatRoomEntity;
 import org.example.chat.repository.entity.ReadStatusEntity;
 import org.example.users.repository.entity.UserEntity;
@@ -17,4 +18,7 @@ public class ReadStatusRepositoryImpl implements ReadStatusRepository {
 
     @Override
     public Long countByChatRoomAndUserAndIsReadFalse(ChatRoomEntity chatRoom, UserEntity user){ return readStatusJpaRepository.countByChatRoomAndUserAndIsReadFalse(chatRoom, user); }
+
+    @Override
+    public     Long countByChatMessageAndIsReadFalse(ChatMessageEntity chatMessage){return readStatusJpaRepository.countByChatMessageAndIsReadFalse(chatMessage);}
 }
