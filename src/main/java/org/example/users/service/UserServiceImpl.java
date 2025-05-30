@@ -291,11 +291,19 @@ public class UserServiceImpl implements UserService {
             //읽지 않은 메시지 개수 조회
             Long count = readStatusRepository.countByChatRoomAndUserAndIsReadFalse(c.getChatRoom(), user);
 
+            GetChatRoomsResponse.LastMessageDto lastMessageDto = null;
+            if (lastMessage != null) {
+                lastMessageDto = GetChatRoomsResponse.LastMessageDto.builder()
+                        .content(lastMessage.getContent())
+                        .time(lastMessage.getCreatedTime())
+                        .build();
+            }
+
             GetChatRoomsResponse getChatRoom = GetChatRoomsResponse.builder()
                     .roomId(c.getChatRoom().getChatRoomId())
                     .roomName(c.getChatRoom().getChatRoomName())
                     .unreadMessageCount(count)
-                    .lastMessage(lastMessage != null ? lastMessage.getContent() : null)
+                    .lastMessage(lastMessageDto)
                     .build();
             getChatRooms.add(getChatRoom);
         }
