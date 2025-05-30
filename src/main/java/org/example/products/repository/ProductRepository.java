@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     // 오늘의 공동구매 추천: DB에서 랜덤으로 가져옴
-    @Query(value = "SELECT * FROM product_entity WHERE deleted_at IS NULL ORDER BY RAND() LIMIT 8", nativeQuery = true)
+    @Query(value = "SELECT * FROM product_entity WHERE deleted_at IS NULL AND deadline >= CURRENT_DATE ORDER BY RAND() LIMIT 8", nativeQuery = true)
     List<ProductEntity> findRandomRecommendedProducts();
 
     // 곧 마감되는 공구: 마감일이 오늘 이후인 공구 중 마감일이 가까운 순
@@ -26,12 +26,13 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Page<ProductEntity> findClosingSoonProducts(Pageable pageable);
 
     // 방금 올라온 공구
-    @Query("SELECT p FROM ProductEntity p WHERE p.deletedAt IS NULL ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM ProductEntity p WHERE p.deletedAt IS NULL AND p.deadline >= CURRENT_DATE ORDER BY p.createdAt DESC")
     Page<ProductEntity> findRecentProducts(Pageable pageable);
 
     //게시글 검식 시 카테고리, 추천, 최신, 마감순 조회
     @Query("SELECT p FROM ProductEntity p " +
             "WHERE p.deletedAt IS NULL " +
+            "AND p.deadline >= CURRENT_DATE " +
             "AND (:keyword IS NULL OR :keyword = '' OR p.title LIKE %:keyword% OR p.description LIKE %:keyword%) " +
             "AND (:category IS NULL OR p.category = :category) " +
             "ORDER BY " +
