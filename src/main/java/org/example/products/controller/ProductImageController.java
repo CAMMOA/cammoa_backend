@@ -5,6 +5,7 @@ import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
 import org.example.common.ResponseEnum.SuccessResponseEnum;
 import org.example.exception.CustomException;
+import org.example.products.dto.request.ImageDeleteRequest;
 import org.example.products.repository.ProductImageRepository;
 import org.example.products.repository.ProductRepository;
 import org.example.products.repository.entity.ProductEntity;
@@ -61,4 +62,36 @@ public class ProductImageController {
                         .build()
         );
     }
+
+    @DeleteMapping("/{postId}/images")
+    public ResponseEntity<?> deleteImage(
+            @PathVariable Long postId,
+            @RequestBody ImageDeleteRequest request
+    ) {
+        ProductEntity product = productRepository.findByIdWithUserAndNotDeleted(postId)
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.POST_NOT_FOUND));
+
+        ProductImageEntity image = productImageRepository
+                .findByProductAndImageUrl(product, request.getImageUrl())
+                .orElseThrow(() -> new CustomException(ErrorResponseEnum.IMAGE_NOT_FOUND));
+
+        // 1. S3에서 삭제
+        fileUploadService.deleteFile(request.getImageUrl());
+
+        // 2. DB에서 삭제
+        productImageRepository.delete(image);
+
+        // 3. 대표 이미지였다면 product.image 필드도 null 처리
+        if (request.getImageUrl().equals(product.getImage())) {
+            product.setImage(null);
+            productRepository.save(product);
+        }
+
+        return ResponseEntity.ok(
+                CommonResponseEntity.builder()
+                        .response(SuccessResponseEnum.REQUEST_SUCCESS)
+                        .build()
+        );
+    }
+
 }
