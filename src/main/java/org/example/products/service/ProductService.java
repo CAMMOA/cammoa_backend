@@ -252,7 +252,7 @@ public class ProductService {
 
         // keyword가 없는 경우
         if (keyword == null || keyword.isBlank()) {
-            products = productRepository.findByCategoryAndDeletedAtIsNull(category);
+            products = productRepository.findByCategoryAndNotDeletedAndNotExpired(category);
 
             // 정렬
             if (sortTypeEnum == SortTypeEnum.DEADLINE) {

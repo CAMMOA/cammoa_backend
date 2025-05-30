@@ -54,6 +54,10 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findByUserAndDeletedAtIsNull(UserEntity user);
 
     Optional<ProductEntity> findByProductIdAndDeletedAtIsNull(Long productId);
+    // 카테고리만 선택 시 마감기한이 지난 게시글 제외
+    @Query("SELECT p FROM ProductEntity p WHERE p.deletedAt IS NULL AND p.category = :category AND p.deadline >= CURRENT_DATE")
+    List<ProductEntity> findByCategoryAndNotDeletedAndNotExpired(@Param("category") CategoryEnum category);
+
 
 
 }
