@@ -1,6 +1,5 @@
 package org.example.products.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.common.repository.entity.CommonResponseEntity;
@@ -14,7 +13,6 @@ import org.example.products.repository.entity.ProductImageEntity;
 import org.example.products.service.FileUploader;
 import org.example.security.JwtTokenProvider;
 import org.example.users.repository.UserRepository;
-import org.example.users.repository.entity.UserEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
