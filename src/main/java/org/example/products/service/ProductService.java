@@ -288,29 +288,8 @@ public class ProductService {
 
 
         return products.stream()
-                .map(this::convertToResponse)
+                .map(this::toProductResponse)
                 .collect(Collectors.toList());
-    }
-
-
-    // ProductEntity를 ProductResponse로 변환
-    private ProductResponse convertToResponse(ProductEntity product) {
-        return ProductResponse.builder()
-                .productId(product.getProductId())
-                .title(product.getTitle())
-                .category(product.getCategory().name())
-                .description(product.getDescription())
-                .imageUrl(product.getImage())
-                .price(product.getPrice())
-                .deadline(product.getDeadline())
-                .numPeople(product.getNumPeople())
-                .place(product.getPlace())
-                .createdAt(product.getCreatedAt())
-                .updatedAt(product.getUpdatedAt())
-                .status(product.getStatus())
-                .currentParticipants(product.getCurrentParticipants())
-                .maxParticipants(product.getMaxParticipants())
-                .build();
     }
 
     @Transactional
