@@ -33,6 +33,10 @@ public class StompHandler implements ChannelInterceptor {
             System.out.println("connect 요청 시 토큰 유효성 검증");
             String bearerToken = accessor.getFirstNativeHeader("Authorization");
 
+            if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+                throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+            }
+
             String token = bearerToken.substring(7);
 
             //토큰 검증
