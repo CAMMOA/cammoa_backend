@@ -20,6 +20,7 @@ import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.DeleteUserRequest;
 import org.example.users.dto.request.LoginRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.LoginResponse;
 import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.service.UserService;
@@ -89,14 +90,12 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
-        JwtToken jwtToken = userService.login(email, password);
+        LoginResponse loginResponse = userService.login(email, password);
 
         log.info("request email = {}, password = {}", email, password);
-        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-
         return ResponseEntity.ok(
             CommonResponseEntity.builder()
-                    .data(jwtToken)
+                    .data(loginResponse)
                     .response(SuccessResponseEnum.LOGIN_SUCCESS)
                     .build()
         );
