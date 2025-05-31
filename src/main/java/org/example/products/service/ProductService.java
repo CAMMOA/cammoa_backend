@@ -244,6 +244,9 @@ public class ProductService {
         if (request.getDeadline() != null) product.setDeadline(request.getDeadline());
         if (request.getPlace() != null) product.setPlace(request.getPlace());
         if (request.getImage() != null) product.setImage(request.getImage());
+        if (request.getMaxParticipants() != null) {
+            product.setMaxParticipants(request.getMaxParticipants());
+        }
 
         return toProductResponse(product);
     }
