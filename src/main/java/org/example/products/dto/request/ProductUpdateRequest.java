@@ -16,6 +16,8 @@ public class ProductUpdateRequest {
     private String description;
     @Positive
     private Integer price;
+    @Positive
+    private Integer maxParticipants;
     @Future
     private LocalDateTime deadline;
     private String place;
