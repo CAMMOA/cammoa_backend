@@ -37,4 +37,10 @@ public class S3Uploader implements FileUploader {
 
         return amazonS3.getUrl(bucket, fileName).toString();
     }
+
+    public void deleteFile(String imageUrl) {
+        String baseUrl = "https://cammoa-uploaded-files.s3.amazonaws.com/";
+        String key = imageUrl.replace(baseUrl, "");
+        amazonS3.deleteObject(bucket, key);
+    }
 }

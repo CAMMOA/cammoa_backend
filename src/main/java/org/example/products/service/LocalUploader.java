@@ -27,4 +27,14 @@ public class LocalUploader implements FileUploader {
 
         return "/images/" + fileName;
     }
+
+    @Override
+    public void deleteFile(String imageUrl) {
+        // 로컬 환경에서는 파일명만 추출하여 삭제
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        File file = new File(uploadDir, fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 }

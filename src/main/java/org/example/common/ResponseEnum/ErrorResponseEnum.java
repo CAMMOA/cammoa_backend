@@ -38,6 +38,9 @@ public enum ErrorResponseEnum implements Response {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid category"),
     POST_HAS_PARTICIPANTS(HttpStatus.BAD_REQUEST, "Cannot delete the post because other users have already joined"),
 
+    // 이미지
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Image not found"),
+
     //중복된 리소스
     DUPLICATED_USERNAME(HttpStatus.CONFLICT , "Duplicated username"),
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "Duplicated nickname"),
