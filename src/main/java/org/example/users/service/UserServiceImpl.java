@@ -27,6 +27,7 @@ import org.example.security.constant.JwtTokenConstant;
 import org.example.security.dto.JwtToken;
 import org.example.users.dto.request.ChangePasswordRequest;
 import org.example.users.dto.request.UserCreateRequest;
+import org.example.users.dto.response.LoginResponse;
 import org.example.users.dto.response.ProfileResponse;
 import org.example.users.dto.response.UserResponse;
 import org.example.users.repository.UserRepository;
@@ -139,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public JwtToken login(String email, String password){
+    public LoginResponse login(String email, String password){
         // 1. 이메일로 사용자 조회
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
@@ -155,7 +156,7 @@ public class UserServiceImpl implements UserService {
 
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication, user.getId());
 
-        return jwtToken;
+        return new LoginResponse(user.getId(), user.getEmail(), jwtToken.getAccessToken(), jwtToken.getRefreshToken());
     }
 
     @Override
