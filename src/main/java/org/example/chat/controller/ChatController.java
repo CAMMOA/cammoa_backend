@@ -50,5 +50,4 @@ public class ChatController {
         chatService.saveMessage(roomId, dto);
         return ResponseEntity.ok("테스트 메시지 저장 완료");
     }
-
 }
