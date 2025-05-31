@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -129,9 +130,12 @@ public class ProductService {
 
     // 오늘의 공동구매 추천 (랜덤 8개)
     public List<ProductListResponse> getRecommendedProducts() {
+        Pageable limit8 = PageRequest.of(0, 8);
         LocalDateTime now = LocalDateTime.now();
-        return productRepository.findRandomRecommendedProducts().stream()
-                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
+        List<ProductEntity> raw = productRepository.findAllNotExpired(now, limit8).getContent();
+        List<ProductEntity> products = new ArrayList<>(raw);
+        Collections.shuffle(products); // 결과 8개 섞기만
+        return products.stream()
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -140,10 +144,9 @@ public class ProductService {
     public List<ProductListResponse> getClosingSoonProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
         LocalDateTime now = LocalDateTime.now();
-        return productRepository.findClosingSoonProducts(limit4)
+        return productRepository.findClosingSoonProducts(now,limit4)
                 .getContent()
                 .stream()
-                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -152,10 +155,9 @@ public class ProductService {
     public List<ProductListResponse> getRecentlyPostedProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
         LocalDateTime now = LocalDateTime.now();
-        return productRepository.findRecentProducts(limit4)
+        return productRepository.findRecentProducts(now,limit4)
                 .getContent()
                 .stream()
-                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
