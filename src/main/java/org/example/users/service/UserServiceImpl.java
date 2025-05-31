@@ -285,6 +285,7 @@ public class UserServiceImpl implements UserService {
 
         for(ChatParticipantEntity c: chatParticipants) {
             ChatRoomEntity chatroom = c.getChatRoom();
+            ProductEntity product = chatroom.getProduct();
 
             //마지막 메시지 조회
             ChatMessageEntity lastMessage = chatMessageRepository.findTopByChatRoomOrderByCreatedTimeDesc(chatroom);
@@ -299,10 +300,21 @@ public class UserServiceImpl implements UserService {
                         .build();
             }
 
+            ProductSimpleResponse productResponse = ProductSimpleResponse.builder()
+                    .productId(product.getProductId())
+                    .imageUrl(product.getImage())
+                    .title(product.getTitle())
+                    .currentParticipants(product.getCurrentParticipants())
+                    .maxParticipants(product.getMaxParticipants())
+                    .price(product.getPrice())
+                    .deadline(product.getDeadline())
+                    .build();
+
             GetChatRoomsResponse getChatRoom = GetChatRoomsResponse.builder()
                     .roomId(c.getChatRoom().getChatRoomId())
                     .roomName(c.getChatRoom().getChatRoomName())
                     .unreadMessageCount(count)
+                    .product(productResponse)
                     .lastMessage(lastMessageDto)
                     .build();
             getChatRooms.add(getChatRoom);
