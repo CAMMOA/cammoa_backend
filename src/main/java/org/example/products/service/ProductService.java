@@ -112,7 +112,10 @@ public class ProductService {
             products = productRepository.findByDeletedAtIsNull();
         }
 
+        LocalDateTime now = LocalDateTime.now();
+
         return products.stream()
+                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(product -> ProductListResponse.builder()
                         .id(product.getProductId())
                         .title(product.getTitle())
@@ -126,7 +129,9 @@ public class ProductService {
 
     // 오늘의 공동구매 추천 (랜덤 8개)
     public List<ProductListResponse> getRecommendedProducts() {
+        LocalDateTime now = LocalDateTime.now();
         return productRepository.findRandomRecommendedProducts().stream()
+                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -134,9 +139,11 @@ public class ProductService {
     // 곧 마감되는 공구 (마감일 빠른 순 4개)
     public List<ProductListResponse> getClosingSoonProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
+        LocalDateTime now = LocalDateTime.now();
         return productRepository.findClosingSoonProducts(limit4)
                 .getContent()
                 .stream()
+                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -144,9 +151,11 @@ public class ProductService {
     // 방금 올라온 공구 (생성일 최신순 4개)
     public List<ProductListResponse> getRecentlyPostedProducts() {
         Pageable limit4 = PageRequest.of(0, 4);
+        LocalDateTime now = LocalDateTime.now();
         return productRepository.findRecentProducts(limit4)
                 .getContent()
                 .stream()
+                .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -253,6 +262,11 @@ public class ProductService {
         // keyword가 없는 경우
         if (keyword == null || keyword.isBlank()) {
             products = productRepository.findByCategoryAndNotDeletedAndNotExpired(category);
+
+            LocalDateTime now = LocalDateTime.now();
+            products = products.stream()
+                    .filter(p -> p.getDeadline() == null || p.getDeadline().isAfter(now))
+                    .collect(Collectors.toList());
 
             // 정렬
             if (sortTypeEnum == SortTypeEnum.DEADLINE) {
