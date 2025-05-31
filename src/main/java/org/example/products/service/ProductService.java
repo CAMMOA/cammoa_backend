@@ -25,8 +25,6 @@ import org.example.products.repository.entity.ProductEntity;
 import org.example.products.repository.entity.ProductImageEntity;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -130,34 +127,33 @@ public class ProductService {
 
     // 오늘의 공동구매 추천 (랜덤 8개)
     public List<ProductListResponse> getRecommendedProducts() {
-        Pageable limit8 = PageRequest.of(0, 8);
         LocalDateTime now = LocalDateTime.now();
-        List<ProductEntity> raw = productRepository.findAllNotExpired(now, limit8).getContent();
-        List<ProductEntity> products = new ArrayList<>(raw);
+        List<ProductEntity> products = productRepository.findAllNotExpired(now);
         Collections.shuffle(products); // 결과 8개 섞기만
         return products.stream()
+                .limit(8)
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
     // 곧 마감되는 공구 (마감일 빠른 순 4개)
     public List<ProductListResponse> getClosingSoonProducts() {
-        Pageable limit4 = PageRequest.of(0, 4);
         LocalDateTime now = LocalDateTime.now();
-        return productRepository.findClosingSoonProducts(now,limit4)
-                .getContent()
-                .stream()
+        List<ProductEntity> products = productRepository.findClosingSoonProducts(now);
+        return products.stream()
+                .sorted((p1, p2) -> p1.getDeadline().compareTo(p2.getDeadline())) // 마감일 빠른 순
+                .limit(4)
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
 
     // 방금 올라온 공구 (생성일 최신순 4개)
     public List<ProductListResponse> getRecentlyPostedProducts() {
-        Pageable limit4 = PageRequest.of(0, 4);
         LocalDateTime now = LocalDateTime.now();
-        return productRepository.findRecentProducts(now,limit4)
-                .getContent()
-                .stream()
+        List<ProductEntity> products = productRepository.findRecentProducts(now);
+        return products.stream()
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt())) // 최신 등록 순
+                .limit(4)
                 .map(ProductListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -284,10 +280,12 @@ public class ProductService {
         }
         // keyword가 있는 경우 (기존 쿼리 활용)
         else {
+            LocalDateTime now = LocalDateTime.now();
             products = productRepository.searchProductsByKeywordAndCategory(
                     keyword,
                     category,
-                    sortTypeEnum.name()
+                    sortTypeEnum.name(),
+                    now
             );
         }
 
