@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.products.dto.response.ProductSimpleResponse;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class GetChatRoomsResponse {
     private String roomName;
     private Long unreadMessageCount;
     private LastMessageDto lastMessage;
+    private ProductSimpleResponse product;
 
     @Data
     @Builder

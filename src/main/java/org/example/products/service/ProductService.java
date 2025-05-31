@@ -373,7 +373,6 @@ public class ProductService {
                 .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
 
         //유저 조회
-        //이메일로 수정해야 함 (로그인 리팩토링할 때 수정)
         UserEntity user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
@@ -385,9 +384,20 @@ public class ProductService {
 
         addParticipantToRoom(chatRoom, user);
 
+        ProductSimpleResponse productResponse = ProductSimpleResponse.builder()
+                .productId(product.getProductId())
+                .imageUrl(product.getImage())
+                .title(product.getTitle())
+                .currentParticipants(product.getCurrentParticipants())
+                .maxParticipants(product.getMaxParticipants())
+                .price(product.getPrice())
+                .deadline(product.getDeadline())
+                .build();
+
         return JoinChatRoomResponse.builder()
                 .roomId(chatRoom.getChatRoomId())
                 .roomName(chatRoom.getChatRoomName())
+                .product(productResponse)
                 .build();
     }
 
@@ -399,6 +409,7 @@ public class ProductService {
                 .build();
         chatParticipantRepository.save(chatParticipant);
     }
+
     //모집 인원 완료시 알림 전송
     public void notifyGroupBuyingCompletion(Long postId) {
         ProductEntity product = productRepository.findById(postId)
