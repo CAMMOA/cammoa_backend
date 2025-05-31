@@ -72,7 +72,7 @@ public class EmailServiceImpl implements EmailService{
         return message;
     }
 
-    // AWS 스타일 공통 베이스 HTML 구조
+    // 공통 베이스 HTML 구조
     private String createBaseHtml(String title, String content) {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>");
