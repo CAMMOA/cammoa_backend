@@ -1,5 +1,8 @@
 package org.example.chat.config;
 
+import lombok.RequiredArgsConstructor;
+import org.example.security.JwtHandshakeInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -8,18 +11,22 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSocketMessageBroker //브로커가 메시지를 특정 룸에 전송
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final StompHandler stompHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
-    public StompWebSocketConfig(StompHandler stompHandler) {
-        this.stompHandler = stompHandler;
+    @Bean
+    public JwtHandshakeInterceptor jwtHandshakeInterceptor() {
+        return new JwtHandshakeInterceptor();
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
+                .addInterceptors(jwtHandshakeInterceptor)
                 .setAllowedOriginPatterns("*");
     }
 
