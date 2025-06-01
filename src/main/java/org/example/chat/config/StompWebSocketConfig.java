@@ -33,9 +33,19 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic");
     }
 
-    // 웹소켓요청(connect, subscribe, disconnect) 등의 요청 시에는 http header 등 http 메시지를 넣어올 수 있고, 이를 interceptor를 통해 가로채 토큰 검증
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor()
+                .corePoolSize(10)
+                .maxPoolSize(20)
+                .queueCapacity(1000);
         registration.interceptors(stompHandler);
+    }
+
+    @Override
+    public void configureClientOutboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor()
+                .corePoolSize(10)
+                .maxPoolSize(20);
     }
 }
