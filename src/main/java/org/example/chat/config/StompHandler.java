@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -26,33 +27,27 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
 
         log.info("STOMP 처리 - sessionId: {}", accessor.getSessionId());
-        log.info("STOMP 처리 - 세션 attributes: {}", sessionAttributes);
+        log.info("STOMP 처리 - 세션 attributes: {}", accessor.getSessionAttributes());
 
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) {
+                log.error("STOMP CONNECT 실패- 인증 정보 없음");
+                throw new IllegalArgumentException("Authentication required");
+            }
+
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                Authentication authentication = (Authentication) sessionAttributes.get("user");
-                if (authentication == null) {
-                    log.error("STOMP CONNECT 실패- 인증 정보 없음");
-                    throw new IllegalArgumentException("Authentication required");
-                }
                 accessor.setUser(authentication);
                 accessor.getSessionAttributes().put("user", authentication);
                 log.info("CONNECT 성공 - Principal 설정 완료: {}", authentication.getName());
             }
 
             if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                Authentication authentication = (Authentication) accessor.getSessionAttributes().get("user");
-                if (authentication == null) {
-                    log.warn("STOMP SUBSCRIBE - Principal 존재하지 않음");
-                    throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
-                }
-
-                accessor.setUser(authentication);
                 String email = authentication.getName();
                 String destination = accessor.getDestination();
+
                 if (destination == null || !destination.startsWith("/topic/")) {
                     log.warn("STOMP SUBSCRIBE - 잘못된 destination: {}", destination);
                     throw new ChatException(ErrorResponseEnum.INVALID_DESTINATION);
@@ -64,6 +59,7 @@ public class StompHandler implements ChannelInterceptor {
                     throw new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND);
                 }
 
+                accessor.setUser(authentication);
                 log.info("SUBSCRIBE 성공 - 사용자: {}, Room: {}", email, roomId);
             }
 
