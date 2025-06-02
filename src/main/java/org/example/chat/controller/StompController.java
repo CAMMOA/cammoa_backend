@@ -12,8 +12,10 @@ import org.example.exception.impl.AuthException;
 import org.example.exception.impl.ChatException;
 import org.example.users.repository.UserRepository;
 import org.example.users.repository.entity.UserEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -28,9 +30,12 @@ public class StompController {
 
     @MessageMapping("/{roomId}") // 클라이언트에서 특정 publish/roomId 형태로 메시지를 발행 시 MessageMapping 수신
     // @DestinationVariable: @MessageMapping 어노테이션으로 정의된 Websocket Controller 내에서만 사용
-    public void sendMessage(@DestinationVariable Long roomId, SendMessageRequest request, Principal principal) throws JsonProcessingException {
+    public void sendMessage(@DestinationVariable Long roomId, SendMessageRequest request, Message<?> message) throws JsonProcessingException {
         System.out.println("======= 컨트롤러 진입 ======");
         System.out.println(request);
+        SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(message);
+        Principal principal = accessor.getUser();
+
         String email = (principal != null) ? principal.getName() : null;
 
         if (email == null) {
@@ -50,8 +55,8 @@ public class StompController {
         chatService.saveMessage(roomId, chatMessageDto);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String message = objectMapper.writeValueAsString(request);
+        String messageStr = objectMapper.writeValueAsString(request);
 
-        redisPubSubService.publish("chat", message);
+        redisPubSubService.publish("chat", messageStr);
     }
 }
