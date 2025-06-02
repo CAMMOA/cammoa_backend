@@ -58,7 +58,7 @@ public class StompController {
         chatService.saveMessage(roomId, chatMessageDto);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String messageStr = objectMapper.writeValueAsString(request);
+        String messageStr = objectMapper.writeValueAsString(chatMessageDto);
 
         redisPubSubService.publish("chat", messageStr);
     }
