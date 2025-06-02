@@ -39,8 +39,8 @@ public class StompHandler implements ChannelInterceptor {
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                 String email = (String) sessionAttributes.get("userEmail");
                 if (email == null) {
-                    log.warn("STOMP CONNECT - userEmail이 세션에 존재하지 않음");
-                    throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+                    log.error("STOMP CONNECT 실패- userEmail이 세션에 존재하지 않음");
+                    throw new IllegalArgumentException("Authentication required");
                 }
                 // 인증 정보 SecurityContext에 등록 (선택)
                 accessor.setUser(new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList()));
