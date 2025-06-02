@@ -33,12 +33,11 @@ public class StompController {
         System.out.println(request);
         String email = (principal != null) ? principal.getName() : null;
 
-        if (email == null || !email.equals(request.getSenderEmail())) {
-            // 보안 강화: Principal의 이메일과 request의 senderEmail이 다르면 예외
+        if (email == null) {
             throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
         }
 
-        UserEntity sender = userRepository.findByEmail(request.getSenderEmail())
+        UserEntity sender = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
