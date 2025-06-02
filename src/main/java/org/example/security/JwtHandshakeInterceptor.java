@@ -1,11 +1,8 @@
 package org.example.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -54,7 +51,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 String email = authentication.getName();
 
                 logger.info("토큰 검증 성공, 사용자: {}", email);
-                attributes.put("userEmail", email);
+                attributes.put("user", authentication);
                 return true;
 
             } catch (JwtException e) {
