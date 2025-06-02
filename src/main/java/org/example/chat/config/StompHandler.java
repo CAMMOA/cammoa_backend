@@ -14,7 +14,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
 import java.util.Map;
 
 @Slf4j
@@ -52,6 +51,7 @@ public class StompHandler implements ChannelInterceptor {
                 }
 
                 accessor.setUser(authentication);
+                String email = authentication.getName();
                 String destination = accessor.getDestination();
                 if (destination == null || !destination.startsWith("/topic/")) {
                     log.warn("STOMP SUBSCRIBE - 잘못된 destination: {}", destination);
