@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -42,8 +43,11 @@ public class StompHandler implements ChannelInterceptor {
                     log.error("STOMP CONNECT 실패- userEmail이 세션에 존재하지 않음");
                     throw new IllegalArgumentException("Authentication required");
                 }
-                // 인증 정보 SecurityContext에 등록 (선택)
-                accessor.setUser(new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList()));
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                accessor.setUser(authentication);
+
                 log.info("CONNECT 성공 - 사용자: {}", email);
             }
 

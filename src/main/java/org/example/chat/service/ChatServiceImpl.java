@@ -37,6 +37,11 @@ public class ChatServiceImpl implements ChatService {
     private final EmailService emailService;
 
     public void saveMessage(Long roomId, ChatMessageDto request) {
+        String email = request.getSenderEmail();
+        if (email == null) {
+            throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+        }
+
         //채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
