@@ -56,6 +56,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
+                attributes.put("authentication", authentication);
 
                 return true;
 

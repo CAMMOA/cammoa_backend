@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,19 @@ public class StompHandler implements ChannelInterceptor {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null) {
-                log.error("STOMP CONNECT 실패- 인증 정보 없음");
+                log.warn("세션 Attribute에서 복원 시도");
+                authentication = (Authentication) accessor.getSessionAttributes().get("authentication");
+                if(authentication != null) {
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    context.setAuthentication(authentication);
+                    SecurityContextHolder.setContext(context);
+                    log.info("세션 Attribute에서 인증 정보 복원 성공: {}", authentication.getName());
+                } else {
+                    log.error("세션 Attribute에도 인증 정보 없음");
+                }
+            }
+            if (authentication == null){
+                log.error("STOMP 처리 실패 - 인증 정보 없음");
                 throw new IllegalArgumentException("Authentication required");
             }
 
