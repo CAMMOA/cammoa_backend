@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
 
@@ -44,16 +45,17 @@ public class StompHandler implements ChannelInterceptor {
                     log.error("STOMP CONNECT 실패- 인증 정보 없음");
                     throw new IllegalArgumentException("Authentication required");
                 }
-                SecurityContextHolder.getContext().setAuthentication(authentication);
                 accessor.setUser(authentication);
 
                 log.info("CONNECT 성공 - Pricipal 설정 완료: {}", authentication);
             }
 
             if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                String email = (String) accessor.getSessionAttributes().get("userEmail");
+                Principal principal = accessor.getUser();
+                String email = (principal != null) ? principal.getName() : null;
+
                 if (email == null) {
-                    log.warn("STOMP SUBSCRIBE - userEmail이 세션에 존재하지 않음");
+                    log.warn("STOMP SUBSCRIBE - Principal 존재하지 않음");
                     throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
                 }
 
