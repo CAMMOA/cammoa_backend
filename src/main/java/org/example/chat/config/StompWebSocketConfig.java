@@ -18,11 +18,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler;
     private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
-    @Bean
-    public JwtHandshakeInterceptor jwtHandshakeInterceptor() {
-        return new JwtHandshakeInterceptor();
-    }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
