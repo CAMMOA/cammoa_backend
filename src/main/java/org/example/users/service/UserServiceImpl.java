@@ -151,12 +151,10 @@ public class UserServiceImpl implements UserService {
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication, user.getId());
 
-        return new LoginResponse(user.getId(), user.getEmail(), jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+        return new LoginResponse(user.getId(), user.getNickname(),user.getEmail(), jwtToken.getAccessToken(), jwtToken.getRefreshToken());
     }
 
     @Override
