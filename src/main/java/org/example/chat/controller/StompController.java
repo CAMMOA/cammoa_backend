@@ -3,6 +3,7 @@ package org.example.chat.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.chat.dto.ChatMessageDto;
 import org.example.chat.dto.request.SendMessageRequest;
 import org.example.chat.service.ChatService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class StompController {
@@ -32,16 +34,18 @@ public class StompController {
     // @DestinationVariable: @MessageMapping 어노테이션으로 정의된 Websocket Controller 내에서만 사용
     public void sendMessage(@DestinationVariable Long roomId, SendMessageRequest request, Message<?> message) throws JsonProcessingException {
         System.out.println("======= 컨트롤러 진입 ======");
-        System.out.println(request);
+
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(message);
         Principal principal = accessor.getUser();
 
-        String email = (principal != null) ? principal.getName() : null;
 
-        if (email == null) {
+        if (principal == null) {
             throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+        } else {
+            log.info("Principal 정보: {}", principal.getName());
         }
 
+        String email = principal.getName();
         UserEntity sender = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(ErrorResponseEnum.USER_NOT_FOUND));
 
