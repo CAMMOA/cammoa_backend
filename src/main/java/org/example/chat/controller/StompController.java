@@ -38,7 +38,6 @@ public class StompController {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(message);
         Principal principal = accessor.getUser();
 
-
         if (principal == null) {
             throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
         } else {
