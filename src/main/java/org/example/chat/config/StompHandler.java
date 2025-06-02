@@ -5,22 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.chat.service.ChatService;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.ChatException;
-import org.example.security.JwtHandshakeInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
-import java.util.Collections;
 import java.util.Map;
 
 @Slf4j
@@ -46,19 +39,19 @@ public class StompHandler implements ChannelInterceptor {
                     throw new IllegalArgumentException("Authentication required");
                 }
                 accessor.setUser(authentication);
-
-                log.info("CONNECT 성공 - Pricipal 설정 완료: {}", authentication);
+                accessor.getSessionAttributes().put("user", authentication);
+                log.info("CONNECT 성공 - Principal 설정 완료: {}", authentication.getName());
             }
 
             if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                Principal principal = accessor.getUser();
-                String email = (principal != null) ? principal.getName() : null;
-
-                if (email == null) {
+                Authentication authentication = (Authentication) accessor.getSessionAttributes().get("user");
+                if (authentication == null) {
                     log.warn("STOMP SUBSCRIBE - Principal 존재하지 않음");
                     throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
                 }
 
+                accessor.setUser(authentication);
+                String email = authentication.getName();
                 String destination = accessor.getDestination();
                 if (destination == null || !destination.startsWith("/topic/")) {
                     log.warn("STOMP SUBSCRIBE - 잘못된 destination: {}", destination);
