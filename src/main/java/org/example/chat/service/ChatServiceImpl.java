@@ -37,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
     private final EmailService emailService;
 
     public void saveMessage(Long roomId, ChatMessageDto request) {
-        String email = request.getSenderEmail();
+        String email =  request.getSenderEmail();
         if (email == null) {
             throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
         }
