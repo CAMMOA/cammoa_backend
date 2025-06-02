@@ -1,14 +1,13 @@
 package org.example.chat.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.JwtException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.chat.service.ChatService;
 import org.example.common.ResponseEnum.ErrorResponseEnum;
 import org.example.exception.impl.ChatException;
+import org.example.security.JwtHandshakeInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -19,92 +18,66 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Map;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
-
-    private static final Logger logger = LoggerFactory.getLogger(StompHandler.class);
-
-    @Value("${jwt.secret}")
-    private String secretKey;
 
     private final ChatService chatService;
 
-    public StompHandler(ChatService chatService) {
-        this.chatService = chatService;
-    }
-
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+
+        log.info("STOMP 처리 - sessionId: {}", accessor.getSessionId());
+        log.info("STOMP 처리 - 세션 attributes: {}", sessionAttributes);
 
         try {
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                handleConnect(accessor);
-            } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                handleSubscribe(accessor);
+                String email = (String) sessionAttributes.get("userEmail");
+                if (email == null) {
+                    log.error("STOMP CONNECT 실패- userEmail이 세션에 존재하지 않음");
+                    throw new IllegalArgumentException("Authentication required");
+                }
+                // 인증 정보 SecurityContext에 등록 (선택)
+                accessor.setUser(new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList()));
+                log.info("CONNECT 성공 - 사용자: {}", email);
             }
+
+            if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+                String email = (String) accessor.getSessionAttributes().get("userEmail");
+                if (email == null) {
+                    log.warn("STOMP SUBSCRIBE - userEmail이 세션에 존재하지 않음");
+                    throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
+                }
+
+                String destination = accessor.getDestination();
+                if (destination == null || !destination.startsWith("/topic/")) {
+                    log.warn("STOMP SUBSCRIBE - 잘못된 destination: {}", destination);
+                    throw new ChatException(ErrorResponseEnum.INVALID_DESTINATION);
+                }
+
+                String roomId = destination.split("/")[2];
+                if (!chatService.isRoomParticipant(email, Long.parseLong(roomId))) {
+                    log.warn("STOMP SUBSCRIBE - {} 사용자가 방 {}에 참여하지 않음", email, roomId);
+                    throw new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND);
+                }
+
+                log.info("SUBSCRIBE 성공 - 사용자: {}, Room: {}", email, roomId);
+            }
+
         } catch (ChatException e) {
-            logger.error("STOMP 처리 중 예외 발생: {}", e.getMessage());
+            log.error("STOMP 처리 중 예외 발생: {}", e.getMessage());
             return buildErrorMessage(e.getMessage(), accessor);
         } catch (Exception e) {
-            logger.error("예상치 못한 예외 발생: {}", e.getMessage(), e);
+            log.error("예상치 못한 예외 발생", e);
             return buildErrorMessage("Internal server error", accessor);
         }
 
         return message;
-    }
-
-    private void handleConnect(StompHeaderAccessor accessor) {
-        String bearerToken = accessor.getFirstNativeHeader("Authorization");
-
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-            throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
-        }
-
-        String token = bearerToken.substring(7);
-        Claims claims = validateToken(token);
-        String email = claims.getSubject();
-
-        // Principal 등록
-        accessor.setUser(new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList()));
-        logger.info("CONNECT 성공 - 사용자: {}", email);
-    }
-
-    private void handleSubscribe(StompHeaderAccessor accessor) {
-        String bearerToken = accessor.getFirstNativeHeader("Authorization");
-
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-            throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
-        }
-
-        String token = bearerToken.substring(7);
-        Claims claims = validateToken(token);
-        String email = claims.getSubject();
-
-        String destination = accessor.getDestination();
-        if (destination == null || !destination.startsWith("/topic/")) {
-            throw new ChatException(ErrorResponseEnum.INVALID_DESTINATION);
-        }
-
-        String roomId = destination.split("/")[2];
-        if (!chatService.isRoomParticipant(email, Long.parseLong(roomId))) {
-            throw new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND);
-        }
-
-        logger.info("SUBSCRIBE 성공 - 사용자: {}, Room: {}", email, roomId);
-    }
-
-    private Claims validateToken(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (JwtException e) {
-            throw new ChatException(ErrorResponseEnum.INVALID_TOKEN);
-        }
     }
 
     private Message<?> buildErrorMessage(String errorMessage, StompHeaderAccessor accessor) {
