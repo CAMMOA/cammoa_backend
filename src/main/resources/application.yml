@@ -11,7 +11,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: 6379
+      port: 29309
 
   jpa:
     hibernate:
@@ -60,7 +60,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: 6379
+      port: 29309
 
   jpa:
     hibernate:
