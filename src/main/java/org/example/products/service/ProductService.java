@@ -312,6 +312,17 @@ public class ProductService {
             throw new CustomException(ErrorResponseEnum.POST_HAS_PARTICIPANTS);
         }
         product.setDeletedAt(LocalDateTime.now());
+
+        // 채팅방 나가기
+        ChatRoomEntity chatRoom = chatRoomRepository.findByProduct(product)
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.CHATROOM_NOT_FOUND));
+
+        UserEntity user = product.getUser();
+
+        ChatParticipantEntity participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user)
+                .orElseThrow(() -> new ChatException(ErrorResponseEnum.PARTICIPANT_NOT_FOUND));
+
+        chatParticipantRepository.delete(participant);
     }
 
     @Transactional
