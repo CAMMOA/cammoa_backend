@@ -1,12 +1,11 @@
 package org.example.email.service;
 
 import jakarta.activation.DataHandler;
-import jakarta.activation.DataSource;
-import jakarta.activation.FileDataSource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import org.example.chat.dto.ChatMessageDto;
 import org.example.chat.repository.entity.ChatRoomEntity;
@@ -80,7 +79,7 @@ public class EmailServiceImpl implements EmailService{
         html.append("<style>");
         html.append("body { background: #f3f4f6; margin:0; padding:0; font-family: Arial, sans-serif; }");
         html.append(".mail-wrap { max-width: 520px; margin:40px auto; background:#fff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.07); overflow:hidden; }");
-        html.append(".mail-header { background: #232f3e; padding:32px 0 16px 0; text-align:center; }");
+        html.append(".mail-header { background: #e6eef7; padding:32px 0 16px 0; text-align:center; }");
         html.append(".mail-header img { max-width: 180px; height:auto; }");
         html.append(".mail-content { padding: 36px 36px 24px 36px; }");
         html.append(".mail-title { font-size: 22px; font-weight: bold; color: #222; margin-bottom: 18px; text-align:left; }");
@@ -188,8 +187,7 @@ public class EmailServiceImpl implements EmailService{
         try {
             MimeBodyPart imagePart = new MimeBodyPart();
             ClassPathResource logoResource = new ClassPathResource("images/logo.png");
-            DataSource dataSource = new FileDataSource(logoResource.getFile());
-            imagePart.setDataHandler(new DataHandler(dataSource));
+            imagePart.setDataHandler(new DataHandler(new ByteArrayDataSource(logoResource.getInputStream(), "image/png")));
             imagePart.setHeader("Content-ID", "<logo>");
             imagePart.setDisposition(MimeBodyPart.INLINE);
             multipart.addBodyPart(imagePart);
